@@ -1,7 +1,8 @@
 #include "../include/lexer.h"
+#include "../include/lexer.h"
 
 #include <stdlib.h>
-#include <memory.h>
+#include <string.h>
 #include <assert.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -97,20 +98,27 @@ static char _peek(
 	return *(lexer->current + offset);
 }
 
-static void _skipInlineComment(
+static void _skipSingleLineComment(
 	struct _Lexer* const lexer)
 {
 	assert(lexer != NULL);
 	assert(lexer->current != NULL);
 
-	assert(_current(lexer) == '#');
-	for (; _current(lexer) != '\n' || _current(lexer) != '\0';)
+	if (_current(lexer) == '/' && _peek(lexer, 1) == '/')
 	{
-		_moveBy(lexer, 1);
+		for (; _current(lexer) != '\n' && _current(lexer) != '\0';)
+		{
+			_moveBy(lexer, 1);
+		}
+
+		if (_current(lexer) == '\n')
+		{
+			_moveBy(lexer, 1);
+		}
 	}
 }
 
-static int _createNameToken(
+static int _createIdentifierToken(
 	struct _Lexer* const lexer,
 	struct _Token* const token)
 {
@@ -126,13 +134,7 @@ static int _createNameToken(
 	unsigned int length = 0;
 	for (; isalpha(_peek(lexer, length)); ++length);
 
-	length = length >= TOKEN_STRING_VALUE_CAPACITY ? TOKEN_STRING_VALUE_CAPACITY : length;
-	memcpy(token->value.s.buffer, lexer->current, length);
-	token->value.s.buffer[length] = '\0';
-
-	token->type = TOKEN_NAME;
-	token->storage = STORAGE_STRING;
-	token->location = lexer->location;
+	*token = _identifierToken(lexer->current, length, lexer->location);
 	_moveBy(lexer, length);
 	return length;
 }
@@ -153,16 +155,7 @@ static int _createIntLiteralToken(
 	unsigned int length = 0;
 	for (; isdigit(_peek(lexer, length)); ++length);
 
-	length = length >= TOKEN_STRING_VALUE_CAPACITY ? TOKEN_STRING_VALUE_CAPACITY : length;
-	char valueBuffer[TOKEN_STRING_VALUE_CAPACITY + 1];
-	memcpy(valueBuffer, lexer->current, length);
-	valueBuffer[length] = '\0';
-	sscanf(valueBuffer, "%d", &token->value.i32);
-	token->value.s.buffer[length] = '\0';
-
-	token->type = TOKEN_LITERAL;
-	token->storage = STORAGE_INT32;
-	token->location = lexer->location;
+	*token = _int32LiteralToken(lexer->current, length, lexer->location);
 	_moveBy(lexer, length);
 	return length;
 }
@@ -181,13 +174,11 @@ static int _createStringLiteralToken(
 	unsigned int length = 0;
 	for (; _peek(lexer, length) != '\"'; ++length);
 
-	length = length >= TOKEN_STRING_VALUE_CAPACITY ? TOKEN_STRING_VALUE_CAPACITY : length;
-	memcpy(token->value.s.buffer, lexer->current, length);
-	token->value.s.buffer[length] = '\0';
+	// length = length >= TOKEN_STRING_VALUE_CAPACITY ? TOKEN_STRING_VALUE_CAPACITY : length;
+	// memcpy(token->value.s.buffer, lexer->current, length);
+	// token->value.s.buffer[length] = '\0';
 
-	token->type = TOKEN_LITERAL;
-	token->storage = STORAGE_STRING;
-	token->location = lexer->location;
+	*token = _identifierToken(lexer->current, length, lexer->location);
 	_moveBy(lexer, length + 1);
 	return length + 1;
 }
@@ -207,10 +198,47 @@ static void _createTokenWithoutStorageAndMoveBy(
 	_moveBy(lexer, offset);
 }
 
+static void _tryToTurnIdentifierTokenToKeywordToken(
+	struct _Token* const token)
+{
+	assert(token != NULL);
+	assert(token->type == TOKEN_IDENTIFIER);
+	assert(token->storage == STORAGE_STRING);
+
+	#define KEYWORDS_COUNT 7
+	static const char* keywords[KEYWORDS_COUNT] =
+	{ "if", "end", "include", "proc", "while", "return", "var" };
+	static enum _TokenType types[KEYWORDS_COUNT] =
+	{ TOKEN_IF, TOKEN_END, TOKEN_INCLUDE, TOKEN_PROC, TOKEN_WHILE, TOKEN_RETURN, TOKEN_VAR };
+	
+	for (unsigned int index = 0; index < KEYWORDS_COUNT; ++index)
+	{
+		if (strcmp(token->value.s.buffer, keywords[index]) == 0)
+		{
+			unsigned int length = strlen(keywords[index]);
+
+			if (token->value.s.length <= length)
+			{
+				free(token->value.s.buffer);
+				token->value.s.buffer = (char*)malloc((length + 1) * sizeof(char));
+			}
+
+			memcpy(token->value.s.buffer, keywords[index], length);
+			token->value.s.buffer[length] ='\0';
+			token->value.s.length = length;
+			token->type = types[index];
+			break;
+		}
+	}
+
+	#undef KEYWORDS_COUNT
+}
+
 void _nextToken(
 	struct _Lexer* const lexer,
 	struct _Token* const token)
 {
+start:
 	assert(lexer != NULL);
 	assert(lexer->current != NULL);
 	assert(token != NULL);
@@ -218,8 +246,9 @@ void _nextToken(
 	_skipWhitespaces(lexer);
 
 	// 1. Check if token type is name
-	if (_createNameToken(lexer, token) > 0)
+	if (_createIdentifierToken(lexer, token) > 0)
 	{
+		_tryToTurnIdentifierTokenToKeywordToken(token);
 		return;
 	}
 
@@ -232,9 +261,51 @@ void _nextToken(
 	// 3. Handle symbols such as semicolon..
 	switch (_current(lexer))
 	{
-		case '#':
+		case '(':
 		{
-			_skipInlineComment(lexer);
+			_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_LEFT_PARENTHESIS, 1);
+		} break;
+
+		case ')':
+		{
+			_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_RIGHT_PARENTHESIS, 1);
+		} break;
+
+		case ',':
+		{
+			_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_COMMA, 1);
+		} break;
+
+		case ':':
+		{
+			_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_COLON, 1);
+		} break;
+
+		case '+':
+		{
+			_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_PLUS, 1);
+		} break;
+
+		case '-':
+		{
+			_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_MINUS, 1);
+		} break;
+
+		case '/':
+		{
+			switch (_peek(lexer, 1))
+			{
+				case '/':
+				{
+					_skipSingleLineComment(lexer);
+					goto start;
+				} break;
+
+				default:
+				{
+					_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_INVALID, 2);
+				} break;
+			}
 		} break;
 
 		case '\"':
@@ -249,20 +320,8 @@ void _nextToken(
 
 		default:
 		{
-			_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_ERROR, 1);
+			_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_INVALID, 1);
 			fprintf(stderr, "ERROR: unknown symbol at location %s! Cannot tokenize!\n", _stringifyLocation(&lexer->location));
 		} break;
 	}
-
-	// token->type = -1;
-	// token->storage = -1;
-	// token->value = ;
-	// token->location = lexer->location;
-
-	// if (_current(lexer) == '\0')
-	// {
-	// 	_createTokenWithoutStorageWithoutMovingCurrent(lexer, token, TOKEN_END_OF_FILE);
-	// 		_moveBy(lexer, 1);
-	// 	return;
-	// }
 }

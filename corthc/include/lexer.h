@@ -1,7 +1,7 @@
 #ifndef _LEXER_H_
 #define _LEXER_H_
 
-#include "./defs.h"
+#include "./token.h"
 
 #ifndef LEXER_BUFFER_CAPACITY
 #	define LEXER_BUFFER_CAPACITY 4069 * 2
