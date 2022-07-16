@@ -43,9 +43,16 @@ struct _Block
 	struct _Block* next;
 };
 
+struct _ProcedureArg
+{
+	const char* name;
+	struct _ProcedureArg* next;
+};
+
 struct _Procedure
 {
 	const char* name;
+	struct _ProcedureArg* arg;
 	struct _Block* body;
 };
 

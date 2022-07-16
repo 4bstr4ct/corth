@@ -122,7 +122,16 @@ static struct _Procedure _parseProcedure(struct _Lexer* const lexer)
 {
 	struct _Procedure procedure = {0};
 
-	
+	struct _Token token = {0};
+
+	// Parsing name
+
+	// Parsing args
+	do
+	{
+	} while (token.type != TOKEN_RIGHT_PARENTHESIS);
+
+	// Parsing body
 
 	return procedure;
 }
