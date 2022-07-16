@@ -170,9 +170,9 @@ static int _tryCreateIdentifierOrKeywordToken(
 	static_assert(TOKEN_TYPES_COUNT == 31, "TOKEN_TYPES_COUNT is higher than accounted in _tryCreateIdentifierOrKeywordToken!");
 	#define KEYWORDS_COUNT 7
 	static const char* const keywords[KEYWORDS_COUNT] =
-	{ "if", "else", "import", "export", "proc", "while", "return" };
+	{ "if", "import", "export", "proc", "while", "return", "var" };
 	static const enum _TokenType types[KEYWORDS_COUNT] =
-	{ TOKEN_IF_KEYWORD, TOKEN_ELSE_KEYWORD, TOKEN_IMPORT_KEYWORD, TOKEN_EXPORT_KEYWORD, TOKEN_PROC_KEYWORD, TOKEN_WHILE_KEYWORD, TOKEN_RETURN_KEYWORD };
+	{ TOKEN_IF_KEYWORD, TOKEN_IMPORT_KEYWORD, TOKEN_EXPORT_KEYWORD, TOKEN_PROC_KEYWORD, TOKEN_WHILE_KEYWORD, TOKEN_RETURN_KEYWORD, TOKEN_VAR_KEYWORD };
 
 	for (unsigned int index = 0; index < KEYWORDS_COUNT; ++index)
 	{
@@ -361,6 +361,30 @@ void _nextToken(
 			fprintf(stderr, "ERROR: unknown symbol `%c` at location %s! Cannot tokenize!\n", *lexer->current, _stringifyLocation(&lexer->location));
 		} break;
 	}
+}
+
+void _peekToken(
+	struct _Lexer* const lexer,
+	struct _Token* const token,
+	const unsigned int offset)
+{
+	assert(lexer != NULL);
+	assert(lexer->current != NULL);
+	assert(token != NULL);
+
+	const char* current = lexer->current;
+	struct _Location location = lexer->location;
+
+	_nextToken(lexer, token);
+
+	for (unsigned int index = 0; index < offset; ++index)
+	{
+		_destroyToken(token);
+		_nextToken(lexer, token);
+	}
+
+	lexer->current = current;
+	lexer->location = location;
 }
 
 enum _TokenType _expectToken(

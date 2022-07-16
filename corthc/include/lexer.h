@@ -26,6 +26,11 @@ void _nextToken(
 	struct _Lexer* const lexer,
 	struct _Token* const token);
 
+void _peekToken(
+	struct _Lexer* const lexer,
+	struct _Token* const token,
+	const unsigned int offset);
+
 enum _TokenType _expectToken(
 	struct _Lexer* const lexer,
 	struct _Token* const token,

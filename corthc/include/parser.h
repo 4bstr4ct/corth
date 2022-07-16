@@ -32,20 +32,29 @@ struct _Expression
 	enum _ExpressionType type;
 };
 
-struct _Statement
+enum _StatementType
 {
-	struct _Expression expression;
+	STATEMENT_COMPOUND			=  0,
+	STATEMENT_CONDITIONAL			,
+	STATEMENT_LOOP					,
+	STATEMENT_RETURN				,
+	STATEMENT_VARIABLE_DEFINITION	,
+	STATEMENT_EXPRESSION			,
+	STATEMENT_NO_OPERATION			,
+
+	STATEMENT_TYPES_COUNT
 };
 
-struct _Block
+struct _Statement
 {
-	struct _Statement statement;
-	struct _Block* next;
+	enum _StatementType type; 
+	struct _Expression* expression;
+	struct _Statement* next;
 };
 
 struct _ProcedureArg
 {
-	const char* name;
+	char* name;
 	struct _ProcedureArg* next;
 };
 
@@ -53,7 +62,7 @@ struct _Procedure
 {
 	const char* name;
 	struct _ProcedureArg* arg;
-	struct _Block* body;
+	struct _Statement* statement;
 };
 
 void _parse(const char* filePath);
