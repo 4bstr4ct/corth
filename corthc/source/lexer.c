@@ -1,5 +1,4 @@
 #include "../include/lexer.h"
-#include "../include/lexer.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -20,21 +19,29 @@ struct _Lexer _createLexer(
 
 	if (!file)
 	{
-		fprintf(stderr, "ERROR: failed to open source file `%s`!", filePath);
+		fprintf(stderr, "ERROR: failed to open source file `%s`!\n", filePath);
 		exit(1);
 	}
 
 	fseek(file, 0, SEEK_END);
-	unsigned int fileSize = ftell(file);
-	fileSize = fileSize >= LEXER_BUFFER_CAPACITY ? LEXER_BUFFER_CAPACITY : fileSize;
+	const unsigned int fileSize = ftell(file);
 	fseek(file, 0, SEEK_SET);
-	fread(lexer.buffer, fileSize, 1, file);
+	lexer.buffer = (char*)malloc((fileSize + 1) * sizeof(char));
+	fread(lexer.buffer, fileSize, sizeof(char), file);
 	fclose(file);
 
 	lexer.buffer[fileSize] = '\0';
 	lexer.length = fileSize;
 	lexer.current = lexer.buffer;
 	return lexer;
+}
+
+void _destroyLexer(
+	struct _Lexer* lexer)
+{
+	assert(lexer != NULL);
+	free(lexer->buffer);
+	lexer->length = 0;
 }
 
 static char _current(
@@ -98,13 +105,13 @@ static char _peek(
 	return *(lexer->current + offset);
 }
 
-static void _skipSingleLineComment(
+static void _skipSingleLineComments(
 	struct _Lexer* const lexer)
 {
 	assert(lexer != NULL);
 	assert(lexer->current != NULL);
 
-	if (_current(lexer) == '/' && _peek(lexer, 1) == '/')
+	while (_current(lexer) == '/' && _peek(lexer, 1) == '/')
 	{
 		for (; _current(lexer) != '\n' && _current(lexer) != '\0';)
 		{
@@ -115,10 +122,36 @@ static void _skipSingleLineComment(
 		{
 			_moveBy(lexer, 1);
 		}
+
+		_skipWhitespaces(lexer);
 	}
 }
 
-static int _createIdentifierToken(
+static void _tryCreateMetaToken(
+	struct _Lexer* const lexer,
+	struct _Token* const token,
+	const enum _TokenType type,
+	const enum _TokenStorage storage,
+	const unsigned int offset)
+{
+	assert(lexer != NULL);
+	assert(token != NULL);
+	*token = _metaToken(type, storage, lexer->location);
+	_moveBy(lexer, offset);
+}
+
+static void _tryCreateInvalidToken(
+	struct _Lexer* const lexer,
+	struct _Token* const token,
+	const unsigned int offset)
+{
+	assert(lexer != NULL);
+	assert(token != NULL);
+	*token = _metaToken(TOKEN_INVALID, STORAGE_NONE, lexer->location);
+	_moveBy(lexer, offset);
+}
+
+static int _tryCreateIdentifierOrKeywordToken(
 	struct _Lexer* const lexer,
 	struct _Token* const token)
 {
@@ -132,14 +165,35 @@ static int _createIdentifierToken(
 	}
 
 	unsigned int length = 0;
-	for (; isalpha(_peek(lexer, length)); ++length);
+	for (; isalpha(_peek(lexer, length)) || isdigit(_peek(lexer, length)); ++length);
+
+	static_assert(TOKEN_TYPES_COUNT == 31, "TOKEN_TYPES_COUNT is higher than accounted in _tryCreateIdentifierOrKeywordToken!");
+	#define KEYWORDS_COUNT 7
+	static const char* const keywords[KEYWORDS_COUNT] =
+	{ "if", "else", "import", "export", "proc", "while", "return" };
+	static const enum _TokenType types[KEYWORDS_COUNT] =
+	{ TOKEN_IF_KEYWORD, TOKEN_ELSE_KEYWORD, TOKEN_IMPORT_KEYWORD, TOKEN_EXPORT_KEYWORD, TOKEN_PROC_KEYWORD, TOKEN_WHILE_KEYWORD, TOKEN_RETURN_KEYWORD };
+
+	for (unsigned int index = 0; index < KEYWORDS_COUNT; ++index)
+	{
+		if (strncmp(lexer->current, keywords[index], length) == 0)
+		{
+			*token = _keywordToken(lexer->current, length, types[index], lexer->location);
+			_moveBy(lexer, length);
+			return length;
+		}
+	}
+	#undef KEYWORDS_COUNT
 
 	*token = _identifierToken(lexer->current, length, lexer->location);
 	_moveBy(lexer, length);
 	return length;
 }
 
-static int _createIntLiteralToken(
+/**
+ * TODO: rework and optimize this function for numeric literals!
+ */
+static int _tryCreateLiteralToken(
 	struct _Lexer* const lexer,
 	struct _Token* const token)
 {
@@ -147,181 +201,186 @@ static int _createIntLiteralToken(
 	assert(lexer->current != NULL);
 	assert(token != NULL);
 
-	if (!isdigit(_current(lexer)))
+	if (_current(lexer) == '\'')
+	{
+		if (_peek(lexer, 2) == '\'')
+		{
+			*token = _charLiteralToken(lexer->current, 1, lexer->location);
+			_moveBy(lexer, 1);
+			return TOKEN_CHAR_LITERAL;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	else if (isdigit(_current(lexer)))
+	{
+		int dotsCount = 0;
+		unsigned int length = 0;
+		for (; isdigit(_peek(lexer, length)) || _peek(lexer, length) == '.'; ++length)
+		{
+			if (_peek(lexer, length) == '.') ++dotsCount;
+		}
+
+		if (dotsCount > 1)
+		{
+			fprintf(stderr, "ERROR: faiure while parsing numeric literal!\n");
+			exit(1);
+		}
+		else if (dotsCount == 1)
+		{
+			if (strncmp(lexer->current + length, "f", 1) == 0)
+			{
+				*token = _float32LiteralToken(lexer->current, length, lexer->location);
+				_moveBy(lexer, length + 1);
+				return TOKEN_FLOAT32_LITERAL;
+			}
+			else
+			{
+				*token = _float64LiteralToken(lexer->current, length, lexer->location);
+				_moveBy(lexer, length);
+				return TOKEN_FLOAT64_LITERAL;
+			}
+		}
+		else
+		{
+			if (strncmp(lexer->current + length, "u", 1) == 0)
+			{
+				*token = _uint32LiteralToken(lexer->current, length, lexer->location);
+				_moveBy(lexer, length + 1);
+				return TOKEN_UINT32_LITERAL;
+			}
+			else
+			{
+				*token = _int32LiteralToken(lexer->current, length, lexer->location);
+				_moveBy(lexer, length);
+				return TOKEN_INT32_LITERAL;
+			}
+		}
+
+		return 0;
+	}
+	else if (_current(lexer) == '\"')
+	{
+		_moveBy(lexer, 1);
+		unsigned int length = 0;
+		for (; _peek(lexer, length) != '\"'; ++length);
+		*token = _stringLiteralToken(lexer->current, length, lexer->location);
+		_moveBy(lexer, length + 1);
+		return TOKEN_STRING_LITERAL;
+	}
+	else
 	{
 		return 0;
 	}
-
-	unsigned int length = 0;
-	for (; isdigit(_peek(lexer, length)); ++length);
-
-	*token = _int32LiteralToken(lexer->current, length, lexer->location);
-	_moveBy(lexer, length);
-	return length;
-}
-
-static int _createStringLiteralToken(
-	struct _Lexer* const lexer,
-	struct _Token* const token)
-{
-	assert(lexer != NULL);
-	assert(lexer->current != NULL);
-	assert(token != NULL);
-
-	assert(_current(lexer) == '\"');
-	_moveBy(lexer, 1);
-
-	unsigned int length = 0;
-	for (; _peek(lexer, length) != '\"'; ++length);
-
-	// length = length >= TOKEN_STRING_VALUE_CAPACITY ? TOKEN_STRING_VALUE_CAPACITY : length;
-	// memcpy(token->value.s.buffer, lexer->current, length);
-	// token->value.s.buffer[length] = '\0';
-
-	*token = _identifierToken(lexer->current, length, lexer->location);
-	_moveBy(lexer, length + 1);
-	return length + 1;
-}
-
-static void _createTokenWithoutStorageAndMoveBy(
-	struct _Lexer* const lexer,
-	struct _Token* const token,
-	const enum _TokenType type,
-	const unsigned int offset)
-{
-	assert(lexer != NULL);
-	assert(token != NULL);
-
-	token->type = type;
-	token->storage = STORAGE_NONE;
-	token->location = lexer->location;
-	_moveBy(lexer, offset);
-}
-
-static void _tryToTurnIdentifierTokenToKeywordToken(
-	struct _Token* const token)
-{
-	assert(token != NULL);
-	assert(token->type == TOKEN_IDENTIFIER);
-	assert(token->storage == STORAGE_STRING);
-
-	#define KEYWORDS_COUNT 7
-	static const char* keywords[KEYWORDS_COUNT] =
-	{ "if", "end", "include", "proc", "while", "return", "var" };
-	static enum _TokenType types[KEYWORDS_COUNT] =
-	{ TOKEN_IF, TOKEN_END, TOKEN_INCLUDE, TOKEN_PROC, TOKEN_WHILE, TOKEN_RETURN, TOKEN_VAR };
-	
-	for (unsigned int index = 0; index < KEYWORDS_COUNT; ++index)
-	{
-		if (strcmp(token->value.s.buffer, keywords[index]) == 0)
-		{
-			unsigned int length = strlen(keywords[index]);
-
-			if (token->value.s.length <= length)
-			{
-				free(token->value.s.buffer);
-				token->value.s.buffer = (char*)malloc((length + 1) * sizeof(char));
-			}
-
-			memcpy(token->value.s.buffer, keywords[index], length);
-			token->value.s.buffer[length] ='\0';
-			token->value.s.length = length;
-			token->type = types[index];
-			break;
-		}
-	}
-
-	#undef KEYWORDS_COUNT
 }
 
 void _nextToken(
 	struct _Lexer* const lexer,
 	struct _Token* const token)
 {
-start:
 	assert(lexer != NULL);
 	assert(lexer->current != NULL);
 	assert(token != NULL);
 
+	// 1. Handle whitespaces
 	_skipWhitespaces(lexer);
 
-	// 1. Check if token type is name
-	if (_createIdentifierToken(lexer, token) > 0)
-	{
-		_tryToTurnIdentifierTokenToKeywordToken(token);
-		return;
-	}
+	// 2. Handle comments
+	_skipSingleLineComments(lexer);
 
-	// 2. Check if token type is literal
-	if (_createIntLiteralToken(lexer, token) > 0)
+	// 3. Handle identifier token
+	if (_tryCreateIdentifierOrKeywordToken(lexer, token) > 0)
 	{
 		return;
 	}
 
-	// 3. Handle symbols such as semicolon..
+	// 4. Handle literal tokens
+	if (_tryCreateLiteralToken(lexer, token) > 0)
+	{
+		return;
+	}
+
+	// 5. Handle all the other tokens
 	switch (_current(lexer))
 	{
 		case '(':
 		{
-			_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_LEFT_PARENTHESIS, 1);
+			_tryCreateMetaToken(lexer, token, TOKEN_LEFT_PARENTHESIS, STORAGE_NONE, 1);
 		} break;
 
 		case ')':
 		{
-			_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_RIGHT_PARENTHESIS, 1);
+			_tryCreateMetaToken(lexer, token, TOKEN_RIGHT_PARENTHESIS, STORAGE_NONE, 1);
 		} break;
 
-		case ',':
+		case '[':
 		{
-			_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_COMMA, 1);
+			_tryCreateMetaToken(lexer, token, TOKEN_LEFT_BRACKET, STORAGE_NONE, 1);
+		} break;
+
+		case ']':
+		{
+			_tryCreateMetaToken(lexer, token, TOKEN_RIGHT_BRACKET, STORAGE_NONE, 1);
+		} break;
+
+		case '{':
+		{
+			_tryCreateMetaToken(lexer, token, TOKEN_LEFT_BRACE, STORAGE_NONE, 1);
+		} break;
+
+		case '}':
+		{
+			_tryCreateMetaToken(lexer, token, TOKEN_RIGHT_BRACE, STORAGE_NONE, 1);
+		} break;
+
+		case ';':
+		{
+			_tryCreateMetaToken(lexer, token, TOKEN_SEMICOLON, STORAGE_NONE, 1);
 		} break;
 
 		case ':':
 		{
-			_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_COLON, 1);
+			_tryCreateMetaToken(lexer, token, TOKEN_COLON, STORAGE_NONE, 1);
 		} break;
 
-		case '+':
+		case ',':
 		{
-			_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_PLUS, 1);
-		} break;
-
-		case '-':
-		{
-			_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_MINUS, 1);
-		} break;
-
-		case '/':
-		{
-			switch (_peek(lexer, 1))
-			{
-				case '/':
-				{
-					_skipSingleLineComment(lexer);
-					goto start;
-				} break;
-
-				default:
-				{
-					_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_INVALID, 2);
-				} break;
-			}
-		} break;
-
-		case '\"':
-		{
-			_createStringLiteralToken(lexer, token);
+			_tryCreateMetaToken(lexer, token, TOKEN_COMMA, STORAGE_NONE, 1);
 		} break;
 
 		case '\0':
 		{
-			_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_END_OF_FILE, 1);
+			_tryCreateMetaToken(lexer, token, TOKEN_END_OF_FILE, STORAGE_NONE, 1);
 		} break;
 
 		default:
 		{
-			_createTokenWithoutStorageAndMoveBy(lexer, token, TOKEN_INVALID, 1);
-			fprintf(stderr, "ERROR: unknown symbol at location %s! Cannot tokenize!\n", _stringifyLocation(&lexer->location));
+			_tryCreateInvalidToken(lexer, token, 1);
+			fprintf(stderr, "ERROR: unknown symbol `%c` at location %s! Cannot tokenize!\n", *lexer->current, _stringifyLocation(&lexer->location));
 		} break;
 	}
+}
+
+enum _TokenType _expectToken(
+	struct _Lexer* const lexer,
+	struct _Token* const token,
+	const enum _TokenType type,
+	const int strict)
+{
+	_nextToken(lexer, token);
+
+	if (token->type != type)
+	{
+		fprintf(stderr, "ERROR: expected token of type %s, but parsed %s!\n",
+			_stringifyTokenType(type), _stringifyTokenType(token->type));
+
+		if (strict)
+		{
+			exit(1);
+		}
+	}
+
+	return token->type;
 }

@@ -16,28 +16,44 @@ typedef signed long long int64;
  * value, and description string. It returns an address of a @ref bool variable
  * that stores the value of the flag.
  */
-bool* _boolFlag(const char* name, const char* usage, const bool defaultValue, const char* description);
+bool* _boolFlag(
+	const char* name,
+	const char* usage,
+	const bool defaultValue,
+	const char* description);
 
 /**
  * Function _int64Flag() defines a 64-bit signed long long flag with specified
  * name, default value, and description string. It returns an address of an @ref int64
  * variable that stores the value of the flag.
  */
-int64* _int64Flag(const char* name, const char* usage, const int64 defaultValue, const char* description);
+int64* _int64Flag(
+	const char* name,
+	const char* usage,
+	const int64 defaultValue,
+	const char* description);
 
 /**
  * Function _doubleFlag() defines a double flag with specified name, default
  * value, and description string. It returns an address of a double variable
  * that stores the value of the flag.
  */
-double* _doubleFlag(const char* name, const char* usage, const double defaultValue, const char* description);
+double* _doubleFlag(
+	const char* name,
+	const char* usage,
+	const double defaultValue,
+	const char* description);
 
 /**
  * Function _stringFlag() defines a string flag with specified name, default
  * value, and description string. It returns an address of a cstring's first
  * element (pointer to char array) that stores the value of the flag.
  */
-const char* _stringFlag(const char* name, const char* usage, const char* const defaultValue, const char* description);
+const char* _stringFlag(
+	const char* name,
+	const char* usage,
+	const char* const defaultValue,
+	const char* description);
 
 /**
  * Parsing flag to determine error level and behavior when parsing the arguments.
@@ -58,6 +74,10 @@ enum _ParseOption
  * It must be called after all flags are defined and before flags are accessed
  * by the program. 
  */
-void _parseFlags(int argc, char** argv, const enum _ParseOption option, const char* const usage);
+void _parseFlags(
+	int argc,
+	char** argv,
+	const enum _ParseOption option,
+	const char* const usage);
 
 #endif

@@ -1,7 +1,16 @@
-include "std.corth"
+// 
+// import "std.io.corth"
+// 
+// 
+// export proc main() : int32
+// {
+// 	print("Hello, World!\n");
+// 	return 0;
+// }
+// 
 
-
-proc main:
-	print "Hello, World!\n\0"
-	return 0
-end
+proc main()
+{
+	print("Hello, World!\n");
+	return 0;
+}

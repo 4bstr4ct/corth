@@ -65,7 +65,8 @@ static const char* const _stringifiedFlagTypes[] =
 	[FLAG_STRING]	= "string"
 };
 
-static const char* _formatHelp(const char* const usage)
+static const char* _formatHelp(
+	const char* const usage)
 {
 	_helpBuffer.length = 0;
 	_helpBuffer.length += snprintf(
@@ -90,12 +91,16 @@ static const char* _formatHelp(const char* const usage)
 	return _helpBuffer.buffer;
 }
 
-static void _printUsage(FILE* const stream)
+static void _printUsage(
+	FILE* const stream)
 {
 	fprintf(stream, "%s", _helpBuffer.buffer);
 }
 
-static struct _Flag* const _metaFlag(const char* name, const char* usage, const char* description)
+static struct _Flag* _metaFlag(
+	const char* name,
+	const char* usage,
+	const char* description)
 {
 	assert(_flagsCache.count < FLAGS_CACHE_CAPACITY);
 	struct _Flag* const flag = &_flagsCache.flags[_flagsCache.count++];
@@ -105,7 +110,11 @@ static struct _Flag* const _metaFlag(const char* name, const char* usage, const 
 	return flag;
 }
 
-bool* _boolFlag(const char* name, const char* usage, const bool defaultValue, const char* description)
+bool* _boolFlag(
+	const char* name,
+	const char* usage,
+	const bool defaultValue,
+	const char* description)
 {
 	struct _Flag* const flag = _metaFlag(name, usage, description);
 	flag->type = FLAG_BOOL;
@@ -113,7 +122,11 @@ bool* _boolFlag(const char* name, const char* usage, const bool defaultValue, co
 	return &flag->value.b;
 }
 
-int64* _int64Flag(const char* name, const char* usage, const int64 defaultValue, const char* description)
+int64* _int64Flag(
+	const char* name,
+	const char* usage,
+	const int64 defaultValue,
+	const char* description)
 {
 	struct _Flag* const flag = _metaFlag(name, usage, description);
 	flag->type = FLAG_INT64;
@@ -121,7 +134,11 @@ int64* _int64Flag(const char* name, const char* usage, const int64 defaultValue,
 	return &flag->value.i64;
 }
 
-double* _doubleFlag(const char* name, const char* usage, const double defaultValue, const char* description)
+double* _doubleFlag(
+	const char* name,
+	const char* usage,
+	const double defaultValue,
+	const char* description)
 {
 	struct _Flag* const flag = _metaFlag(name, usage, description);
 	flag->type = FLAG_DOUBLE;
@@ -129,7 +146,11 @@ double* _doubleFlag(const char* name, const char* usage, const double defaultVal
 	return &flag->value.d;
 }
 
-const char* _stringFlag(const char* name, const char* usage, const char* const defaultValue, const char* description)
+const char* _stringFlag(
+	const char* name,
+	const char* usage,
+	const char* const defaultValue,
+	const char* description)
 {
 	struct _Flag* const flag = _metaFlag(name, usage, description);
 	flag->type = FLAG_STRING;
@@ -140,11 +161,13 @@ const char* _stringFlag(const char* name, const char* usage, const char* const d
 	return (const char*)(flag->value.s);
 }
 
-static const char* _shift(int* argc, char*** argv)
+static const char* _shift(
+	int* argc,
+	char*** argv)
 {
 	const char* current = ((void*)0);
 
-	if (argc > 0)
+	if (*argc > 0)
 	{
 		current = **argv;
 		*argc -= 1;
@@ -154,7 +177,9 @@ static const char* _shift(int* argc, char*** argv)
 	return current;
 }
 
-static int _handleFlag(struct _Flag* const flag, const char* argValue)
+static int _handleFlag(
+	struct _Flag* const flag,
+	const char* argValue)
 {
 	switch (flag->type)
 	{
@@ -246,7 +271,11 @@ static int _handleFlag(struct _Flag* const flag, const char* argValue)
 	return 0;
 }
 
-void _parseFlags(int argc, char** argv, const enum _ParseOption option, const char* const usage)
+void _parseFlags(
+	int argc,
+	char** argv,
+	const enum _ParseOption option,
+	const char* const usage)
 {
 	_formatHelp(usage);
 
@@ -303,7 +332,7 @@ void _parseFlags(int argc, char** argv, const enum _ParseOption option, const ch
 			}
 		}
 
-		if (option == PARSE_STRICT && invalidArgumentEncountered >= _flagsCache.count)
+		if (option == PARSE_STRICT && invalidArgumentEncountered >= (signed int)_flagsCache.count)
 		{
 			fprintf(stderr, "ERROR: unknown argument `%s` encountered for flags cache!\n", arg);
 			_printUsage(stderr);
