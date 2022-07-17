@@ -5,44 +5,59 @@
 #include <assert.h>
 #include <stdio.h>
 
-static_assert(TOKEN_TYPES_COUNT == 31, "TOKEN_TYPES_COUNT is higher than accounted in _stringifiedTokenTypes!");
+static_assert(TOKEN_TYPES_COUNT == 43, "TOKEN_TYPES_COUNT is higher than accounted in _stringifiedTokenTypes!");
 static const char* const _stringifiedTokenTypes[TOKEN_TYPES_COUNT] =
 {
-	[TOKEN_IDENTIFIER]			= "TOKEN_IDENTIFIER",
+	[TOKEN_IDENTIFIER]				= "TOKEN_IDENTIFIER",
 
-	[TOKEN_IF_KEYWORD]			= "TOKEN_IF_KEYWORD",
-	[TOKEN_IMPORT_KEYWORD]		= "TOKEN_IMPORT_KEYWORD",
-	[TOKEN_EXPORT_KEYWORD]		= "TOKEN_EXPORT_KEYWORD",
-	[TOKEN_PROC_KEYWORD]		= "TOKEN_PROC_KEYWORD",
-	[TOKEN_WHILE_KEYWORD]		= "TOKEN_WHILE_KEYWORD",
-	[TOKEN_RETURN_KEYWORD]		= "TOKEN_RETURN_KEYWORD",
-	[TOKEN_VAR_KEYWORD]			= "TOKEN_VAR_KEYWORD",
+	[TOKEN_IF_KEYWORD]				= "TOKEN_IF_KEYWORD",
+	[TOKEN_IMPORT_KEYWORD]			= "TOKEN_IMPORT_KEYWORD",
+	[TOKEN_EXPORT_KEYWORD]			= "TOKEN_EXPORT_KEYWORD",
+	[TOKEN_PROC_KEYWORD]			= "TOKEN_PROC_KEYWORD",
+	[TOKEN_WHILE_KEYWORD]			= "TOKEN_WHILE_KEYWORD",
+	[TOKEN_RETURN_KEYWORD]			= "TOKEN_RETURN_KEYWORD",
+	[TOKEN_VAR_KEYWORD]				= "TOKEN_VAR_KEYWORD",
 
-	[TOKEN_CHAR_LITERAL]		= "TOKEN_CHAR_LITERAL",
-	[TOKEN_INT8_LITERAL]		= "TOKEN_INT8_LITERAL",
-	[TOKEN_UINT8_LITERAL]		= "TOKEN_UINT8_LITERAL",
-	[TOKEN_INT16_LITERAL]		= "TOKEN_INT16_LITERAL",
-	[TOKEN_UINT16_LITERAL]		= "TOKEN_UINT16_LITERAL",
-	[TOKEN_INT32_LITERAL]		= "TOKEN_INT32_LITERAL",
-	[TOKEN_UINT32_LITERAL]		= "TOKEN_UINT32_LITERAL",
-	[TOKEN_INT64_LITERAL]		= "TOKEN_INT64_LITERAL",
-	[TOKEN_UINT64_LITERAL]		= "TOKEN_UINT64_LITERAL",
-	[TOKEN_FLOAT32_LITERAL]		= "TOKEN_FLOAT32_LITERAL",
-	[TOKEN_FLOAT64_LITERAL]		= "TOKEN_FLOAT64_LITERAL",
-	[TOKEN_STRING_LITERAL]		= "TOKEN_STRING_LITERAL",
+	[TOKEN_CHAR_LITERAL]			= "TOKEN_CHAR_LITERAL",
+	[TOKEN_INT8_LITERAL]			= "TOKEN_INT8_LITERAL",
+	[TOKEN_UINT8_LITERAL]			= "TOKEN_UINT8_LITERAL",
+	[TOKEN_INT16_LITERAL]			= "TOKEN_INT16_LITERAL",
+	[TOKEN_UINT16_LITERAL]			= "TOKEN_UINT16_LITERAL",
+	[TOKEN_INT32_LITERAL]			= "TOKEN_INT32_LITERAL",
+	[TOKEN_UINT32_LITERAL]			= "TOKEN_UINT32_LITERAL",
+	[TOKEN_INT64_LITERAL]			= "TOKEN_INT64_LITERAL",
+	[TOKEN_UINT64_LITERAL]			= "TOKEN_UINT64_LITERAL",
+	[TOKEN_FLOAT32_LITERAL]			= "TOKEN_FLOAT32_LITERAL",
+	[TOKEN_FLOAT64_LITERAL]			= "TOKEN_FLOAT64_LITERAL",
+	[TOKEN_STRING_LITERAL]			= "TOKEN_STRING_LITERAL",
 
-	[TOKEN_LEFT_PARENTHESIS]	= "TOKEN_LEFT_PARENTHESIS",
-	[TOKEN_RIGHT_PARENTHESIS]	= "TOKEN_RIGHT_PARENTHESIS",
-	[TOKEN_LEFT_BRACKET]		= "TOKEN_LEFT_BRACKET",
-	[TOKEN_RIGHT_BRACKET]		= "TOKEN_RIGHT_BRACKET",
-	[TOKEN_LEFT_BRACE]			= "TOKEN_LEFT_BRACE",
-	[TOKEN_RIGHT_BRACE]			= "TOKEN_RIGHT_BRACE",
-	[TOKEN_SEMICOLON]			= "TOKEN_SEMICOLON",
-	[TOKEN_COLON]				= "TOKEN_COLON",
-	[TOKEN_COMMA]				= "TOKEN_COMMA",
+	[TOKEN_LEFT_PARENTHESIS]		= "TOKEN_LEFT_PARENTHESIS",
+	[TOKEN_RIGHT_PARENTHESIS]		= "TOKEN_RIGHT_PARENTHESIS",
+	[TOKEN_LEFT_BRACKET]			= "TOKEN_LEFT_BRACKET",
+	[TOKEN_RIGHT_BRACKET]			= "TOKEN_RIGHT_BRACKET",
+	[TOKEN_LEFT_BRACE]				= "TOKEN_LEFT_BRACE",
+	[TOKEN_RIGHT_BRACE]				= "TOKEN_RIGHT_BRACE",
+	[TOKEN_SEMICOLON]				= "TOKEN_SEMICOLON",
+	[TOKEN_COLON]					= "TOKEN_COLON",
+	[TOKEN_COMMA]					= "TOKEN_COMMA",
 
-	[TOKEN_END_OF_FILE]			= "TOKEN_END_OF_FILE",
-	[TOKEN_INVALID]				= "TOKEN_INVALID"
+	[TOKEN_BITWISE_AND]				= "TOKEN_BITWISE_AND",
+	[TOKEN_BITWISE_OR]				= "TOKEN_BITWISE_OR",
+	[TOKEN_BITWISE_NOT]				= "TOKEN_BITWISE_NOT",
+
+	[TOKEN_LOGICAL_AND]				= "TOKEN_LOGICAL_AND",
+	[TOKEN_LOGICAL_OR]				= "TOKEN_LOGICAL_OR",
+	[TOKEN_LOGICAL_NOT]				= "TOKEN_LOGICAL_NOT",
+
+	[TOKEN_EQUAL]					= "TOKEN_EQUAL",
+	[TOKEN_NOT_EQUAL]				= "TOKEN_NOT_EQUAL",
+	[TOKEN_LESS_THAN]				= "TOKEN_LESS_THAN",
+	[TOKEN_LESS_THAN_OR_EQUAL]		= "TOKEN_LESS_THAN_OR_EQUAL",
+	[TOKEN_GREATER_THAN]			= "TOKEN_GREATER_THAN",
+	[TOKEN_GREATER_THAN_OR_EQUAL]	= "TOKEN_GREATER_THAN_OR_EQUAL",
+
+	[TOKEN_END_OF_FILE]				= "TOKEN_END_OF_FILE",
+	[TOKEN_INVALID]					= "TOKEN_INVALID"
 };
 static_assert(sizeof(_stringifiedTokenTypes) / sizeof(const char* const), "Size of _stringifiedTokenTypes is not equal to TOKEN_TYPES_COUNT!");
 
@@ -56,23 +71,23 @@ const char* _stringifyTokenType(
 static_assert(TOKEN_STORAGES_COUNT == 15, "TOKEN_STORAGES_COUNT is higher than accounted in _stringifiedTokenStorages!");
 static const char* const _stringifiedTokenStorages[TOKEN_STORAGES_COUNT] =
 {
-	[STORAGE_NONE]				= "STORAGE_NONE",
+	[STORAGE_NONE]					= "STORAGE_NONE",
 
-	[STORAGE_IDENTIFIER]		= "STORAGE_IDENTIFIER",
-	[STORAGE_KEYWORD]			= "STORAGE_KEYWORD",
+	[STORAGE_IDENTIFIER]			= "STORAGE_IDENTIFIER",
+	[STORAGE_KEYWORD]				= "STORAGE_KEYWORD",
 
-	[STORAGE_CHAR]				= "STORAGE_CHAR",
-	[STORAGE_INT8]				= "STORAGE_INT8",
-	[STORAGE_UINT8]				= "STORAGE_UINT8",
-	[STORAGE_INT16]				= "STORAGE_INT16",
-	[STORAGE_UINT16]			= "STORAGE_UINT16",
-	[STORAGE_INT32]				= "STORAGE_INT32",
-	[STORAGE_UINT32]			= "STORAGE_UINT32",
-	[STORAGE_INT64]				= "STORAGE_INT64",
-	[STORAGE_UINT64]			= "STORAGE_UINT64",
-	[STORAGE_FLOAT32]			= "STORAGE_FLOAT32",
-	[STORAGE_FLOAT64]			= "STORAGE_FLOAT64",
-	[STORAGE_STRING]			= "STORAGE_STRING"
+	[STORAGE_CHAR]					= "STORAGE_CHAR",
+	[STORAGE_INT8]					= "STORAGE_INT8",
+	[STORAGE_UINT8]					= "STORAGE_UINT8",
+	[STORAGE_INT16]					= "STORAGE_INT16",
+	[STORAGE_UINT16]				= "STORAGE_UINT16",
+	[STORAGE_INT32]					= "STORAGE_INT32",
+	[STORAGE_UINT32]				= "STORAGE_UINT32",
+	[STORAGE_INT64]					= "STORAGE_INT64",
+	[STORAGE_UINT64]				= "STORAGE_UINT64",
+	[STORAGE_FLOAT32]				= "STORAGE_FLOAT32",
+	[STORAGE_FLOAT64]				= "STORAGE_FLOAT64",
+	[STORAGE_STRING]				= "STORAGE_STRING"
 };
 static_assert(sizeof(_stringifiedTokenStorages) / sizeof(const char* const), "Size of _stringifiedTokenStorages is not equal to TOKEN_STORAGES_COUNT!");
 
@@ -163,12 +178,13 @@ struct _Token _int8LiteralToken(
 	);
 
 	assert(value != NULL);
-	assert(length < 256); // Last char is for \0!
-	char buffer[256];
+	char* buffer = (char*)malloc((length + 1) * sizeof(char));
+	assert(buffer != NULL);
 	memcpy(buffer, value, length);
 	buffer[length] = '\0';
 	signed int temp = 0;
 	sscanf(buffer, "%d", &temp);
+	free(buffer);
 	token.value.literal.i8 = (signed char)temp;
 	return token;
 }
@@ -185,12 +201,13 @@ struct _Token _uint8LiteralToken(
 	);
 
 	assert(value != NULL);
-	assert(length < 256); // Last char is for \0!
-	char buffer[256];
+	char* buffer = (char*)malloc((length + 1) * sizeof(char));
+	assert(buffer != NULL);
 	memcpy(buffer, value, length);
 	buffer[length] = '\0';
 	unsigned int temp = 0;
 	sscanf(buffer, "%u", &temp);
+	free(buffer);
 	token.value.literal.u8 = (unsigned char)temp;
 	return token;
 }
@@ -207,11 +224,12 @@ struct _Token _int16LiteralToken(
 	);
 
 	assert(value != NULL);
-	assert(length < 256); // Last char is for \0!
-	char buffer[256];
+	char* buffer = (char*)malloc((length + 1) * sizeof(char));
+	assert(buffer != NULL);
 	memcpy(buffer, value, length);
 	buffer[length] = '\0';
 	sscanf(buffer, "%hd", &token.value.literal.i16);
+	free(buffer);
 	return token;
 }
 
@@ -227,11 +245,12 @@ struct _Token _uint16LiteralToken(
 	);
 
 	assert(value != NULL);
-	assert(length < 256); // Last char is for \0!
-	char buffer[256];
+	char* buffer = (char*)malloc((length + 1) * sizeof(char));
+	assert(buffer != NULL);
 	memcpy(buffer, value, length);
 	buffer[length] = '\0';
 	sscanf(buffer, "%hu", &token.value.literal.u16);
+	free(buffer);
 	return token;
 }
 
@@ -247,11 +266,12 @@ struct _Token _int32LiteralToken(
 	);
 
 	assert(value != NULL);
-	assert(length < 256); // Last char is for \0!
-	char buffer[256];
+	char* buffer = (char*)malloc((length + 1) * sizeof(char));
+	assert(buffer != NULL);
 	memcpy(buffer, value, length);
 	buffer[length] = '\0';
 	sscanf(buffer, "%d", &token.value.literal.i32);
+	free(buffer);
 	return token;
 }
 
@@ -267,11 +287,12 @@ struct _Token _uint32LiteralToken(
 	);
 
 	assert(value != NULL);
-	assert(length < 256); // Last char is for \0!
-	char buffer[256];
+	char* buffer = (char*)malloc((length + 1) * sizeof(char));
+	assert(buffer != NULL);
 	memcpy(buffer, value, length);
 	buffer[length] = '\0';
 	sscanf(buffer, "%u", &token.value.literal.u32);
+	free(buffer);
 	return token;
 }
 
@@ -287,11 +308,12 @@ struct _Token _int64LiteralToken(
 	);
 
 	assert(value != NULL);
-	assert(length < 256); // Last char is for \0!
-	char buffer[256];
+	char* buffer = (char*)malloc((length + 1) * sizeof(char));
+	assert(buffer != NULL);
 	memcpy(buffer, value, length);
 	buffer[length] = '\0';
 	sscanf(buffer, "%lld", &token.value.literal.i64);
+	free(buffer);
 	return token;
 }
 
@@ -307,11 +329,12 @@ struct _Token _uint64LiteralToken(
 	);
 
 	assert(value != NULL);
-	assert(length < 256); // Last char is for \0!
-	char buffer[256];
+	char* buffer = (char*)malloc((length + 1) * sizeof(char));
+	assert(buffer != NULL);
 	memcpy(buffer, value, length);
 	buffer[length] = '\0';
 	sscanf(buffer, "%llu", &token.value.literal.u64);
+	free(buffer);
 	return token;
 }
 
@@ -327,11 +350,12 @@ struct _Token _float32LiteralToken(
 	);
 
 	assert(value != NULL);
-	assert(length < 256); // Last char is for \0!
-	char buffer[256];
+	char* buffer = (char*)malloc((length + 1) * sizeof(char));
+	assert(buffer != NULL);
 	memcpy(buffer, value, length);
 	buffer[length] = '\0';
 	sscanf(buffer, "%f", &token.value.literal.f32);
+	free(buffer);
 	return token;
 }
 
@@ -347,11 +371,12 @@ struct _Token _float64LiteralToken(
 	);
 
 	assert(value != NULL);
-	assert(length < 256); // Last char is for \0!
-	char buffer[256];
+	char* buffer = (char*)malloc((length + 1) * sizeof(char));
+	assert(buffer != NULL);
 	memcpy(buffer, value, length);
 	buffer[length] = '\0';
 	sscanf(buffer, "%lf", &token.value.literal.f64);
+	free(buffer);
 	return token;
 }
 

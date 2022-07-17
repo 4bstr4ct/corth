@@ -167,7 +167,7 @@ static int _tryCreateIdentifierOrKeywordToken(
 	unsigned int length = 0;
 	for (; isalpha(_peek(lexer, length)) || isdigit(_peek(lexer, length)); ++length);
 
-	static_assert(TOKEN_TYPES_COUNT == 31, "TOKEN_TYPES_COUNT is higher than accounted in _tryCreateIdentifierOrKeywordToken!");
+	static_assert(TOKEN_TYPES_COUNT == 43, "TOKEN_TYPES_COUNT is higher than accounted in _tryCreateIdentifierOrKeywordToken!");
 	#define KEYWORDS_COUNT 7
 	static const char* const keywords[KEYWORDS_COUNT] =
 	{ "if", "import", "export", "proc", "while", "return", "var" };
@@ -349,6 +349,67 @@ void _nextToken(
 		{
 			_tryCreateMetaToken(lexer, token, TOKEN_COMMA, STORAGE_NONE, 1);
 		} break;
+
+		static_assert(0, "TODO: implement new tokens!");
+		/*
+		case '&':
+		{
+			switch (_peekBy(lexer, 1))
+			{
+				case '&':
+				{
+					static_assert(0, "TODO: implement logical AND!");
+				} break;
+
+				default:
+				{
+					static_assert(0, "TODO: implement bitwise AND!");
+				} break;
+			}
+		} break;
+
+		case '|':
+		{
+			switch (_peekBy(lexer, 1))
+			{
+				case '|':
+				{
+					static_assert(0, "TODO: implement logical OR!");
+				} break;
+
+				default:
+				{
+					static_assert(0, "TODO: implement bitwise OR!");
+				} break;
+			}
+		} break;
+
+		case '~':
+		{
+			static_assert(0, "TODO: implement bitwise NOT!");
+		} break;
+
+		case '!':
+		{
+			static_assert(0, "TODO: implement logical NOT!");
+		} break;
+
+		case '=':
+		{
+			switch (_peekBy(lexer, 1))
+			{
+				case '=':
+				{
+					static_assert(0, "TODO: implement logical NOT!");
+				} break;
+
+				default:
+				{
+					static_assert(0, "TODO: implement asignment operator!");
+				} break;
+			}
+		} break;
+		*/
 
 		case '\0':
 		{
