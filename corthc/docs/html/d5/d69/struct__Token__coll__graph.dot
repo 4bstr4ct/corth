@@ -1,0 +1,11 @@
+digraph "_Token"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="_Token",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="A structure that holds token's type, storage, location, and a value."];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" location" ,fontname="Helvetica"];
+  Node2 [label="_Location",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$d6/d8f/struct__Location.html",tooltip="A structure that defines a location of a character or beginning of a word or a sequence in a file."];
+  Node3 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" value" ,fontname="Helvetica"];
+  Node3 [label="_TokenValue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$d8/dbf/union__TokenValue.html",tooltip="A union that holds an identifier, a keyword, and the literal values."];
+}

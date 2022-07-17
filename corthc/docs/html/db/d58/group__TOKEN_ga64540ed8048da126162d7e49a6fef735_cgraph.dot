@@ -1,0 +1,14 @@
+digraph "_stringifyToken"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="_stringifyToken",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Stringify a token with all its fields into a static chars buffer and return a pointer to that buffer'..."];
+  Node1 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="_stringifyLocation",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$d0/dad/location_8c.html#ae2ed69fe4522b605e8a7a245e9dd3ec4",tooltip="Stringify a location structure to the format 'file=s, line=d, column=d'."];
+  Node1 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="_stringifyTokenStorage",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$db/d58/group__TOKEN.html#ga9b32167937fbc9dccb012b0cd90113c3",tooltip="Stringify token storage."];
+  Node1 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="_stringifyTokenType",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$db/d58/group__TOKEN.html#ga23aa0bd700069d91d1bbd40f54f3e3f7",tooltip="Stringify token type."];
+}
