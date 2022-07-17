@@ -1,20 +1,12 @@
 #include "../include/cflag.h"
 #include "../include/location.h"
-#include "../include/token.h"
-#include "../include/lexer.h"
+#include "../include/tokenizer.h"
 #include "../include/parser.h"
 
 #include <stdio.h>
 
 int main(int argc, char** argv)
 {
-	/*
-	const char* buffer = "-15";
-	signed int value = 0; 
-	sscanf(buffer, "%d", &value);
-	fprintf(stdout, "%d\n", value);
-	*/
-
 	const char* outputFile = _stringFlag(
 		"--output", "--output <path>", "output.nasm",
 		"Set output file path");
