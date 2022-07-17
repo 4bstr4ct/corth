@@ -283,7 +283,7 @@ static struct _Procedure _parseProcedure(struct _Lexer* const lexer)
 
 void _parse(const char* filePath)
 {
-#if 1
+#if 0
 	struct _Lexer lexer = _createLexer(filePath);
 
 	_parseProcedure(&lexer);
@@ -291,7 +291,7 @@ void _parse(const char* filePath)
 	_destroyLexer(&lexer);
 #endif
 
-#if 0
+#if 1
 	struct _Lexer lexer = _createLexer(filePath);
 	struct _Token token = {0};
 

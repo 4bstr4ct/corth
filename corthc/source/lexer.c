@@ -60,7 +60,8 @@ static int _isWhitespace(
 	return _current(lexer) == 13
 		|| _current(lexer) == 10
 		|| _current(lexer) == ' '
-		|| _current(lexer) == '\t';
+		|| _current(lexer) == '\t'
+		|| _current(lexer) == '\n';
 }
 
 static void _moveBy(
@@ -96,7 +97,7 @@ static void _skipWhitespaces(
 	}
 }
 
-static char _peek(
+static char _peekBy(
 	struct _Lexer* const lexer,
 	const unsigned int offset)
 {
@@ -111,7 +112,7 @@ static void _skipSingleLineComments(
 	assert(lexer != NULL);
 	assert(lexer->current != NULL);
 
-	while (_current(lexer) == '/' && _peek(lexer, 1) == '/')
+	while (_current(lexer) == '/' && _peekBy(lexer, 1) == '/')
 	{
 		for (; _current(lexer) != '\n' && _current(lexer) != '\0';)
 		{
@@ -165,14 +166,18 @@ static int _tryCreateIdentifierOrKeywordToken(
 	}
 
 	unsigned int length = 0;
-	for (; isalpha(_peek(lexer, length)) || isdigit(_peek(lexer, length)); ++length);
+	for (; isalpha(_peekBy(lexer, length)) || isdigit(_peekBy(lexer, length)); ++length);
 
-	static_assert(TOKEN_TYPES_COUNT == 43, "TOKEN_TYPES_COUNT is higher than accounted in _tryCreateIdentifierOrKeywordToken!");
-	#define KEYWORDS_COUNT 7
+	static_assert(TOKEN_TYPES_COUNT == 65, "TOKEN_TYPES_COUNT is higher than accounted in _tryCreateIdentifierOrKeywordToken!");
+	#define KEYWORDS_COUNT 18
 	static const char* const keywords[KEYWORDS_COUNT] =
-	{ "if", "import", "export", "proc", "while", "return", "var" };
+	{ "if", "import", "export", "proc", "while", "return", "var",
+	  "char", "int8", "uint8", "int16", "uint16", "int32", "uint32",
+	  "int64", "uint64", "float32", "float64" };
 	static const enum _TokenType types[KEYWORDS_COUNT] =
-	{ TOKEN_IF_KEYWORD, TOKEN_IMPORT_KEYWORD, TOKEN_EXPORT_KEYWORD, TOKEN_PROC_KEYWORD, TOKEN_WHILE_KEYWORD, TOKEN_RETURN_KEYWORD, TOKEN_VAR_KEYWORD };
+	{ TOKEN_IF_KEYWORD, TOKEN_IMPORT_KEYWORD, TOKEN_EXPORT_KEYWORD, TOKEN_PROC_KEYWORD, TOKEN_WHILE_KEYWORD, TOKEN_RETURN_KEYWORD, TOKEN_VAR_KEYWORD,
+	  TOKEN_CHAR_KEYWORD, TOKEN_INT8_KEYWORD, TOKEN_UINT8_KEYWORD, TOKEN_INT16_KEYWORD, TOKEN_UINT16_KEYWORD, TOKEN_INT32_KEYWORD, TOKEN_UINT32_KEYWORD,
+	  TOKEN_INT64_KEYWORD, TOKEN_UINT64_KEYWORD, TOKEN_FLOAT32_KEYWORD, TOKEN_FLOAT64_KEYWORD };
 
 	for (unsigned int index = 0; index < KEYWORDS_COUNT; ++index)
 	{
@@ -203,10 +208,11 @@ static int _tryCreateLiteralToken(
 
 	if (_current(lexer) == '\'')
 	{
-		if (_peek(lexer, 2) == '\'')
+		if (_peekBy(lexer, 2) == '\'')
 		{
-			*token = _charLiteralToken(lexer->current, 1, lexer->location);
 			_moveBy(lexer, 1);
+			*token = _charLiteralToken(lexer->current, 1, lexer->location);
+			_moveBy(lexer, 2);
 			return TOKEN_CHAR_LITERAL;
 		}
 		else
@@ -214,13 +220,19 @@ static int _tryCreateLiteralToken(
 			return 0;
 		}
 	}
-	else if (isdigit(_current(lexer)))
+	else if (isdigit(_current(lexer)) || (_current(lexer) == '-' && isdigit(_peekBy(lexer, 1))))
 	{
 		int dotsCount = 0;
 		unsigned int length = 0;
-		for (; isdigit(_peek(lexer, length)) || _peek(lexer, length) == '.'; ++length)
+
+		if (_current(lexer) == '-')
 		{
-			if (_peek(lexer, length) == '.') ++dotsCount;
+			++length;
+		}
+
+		for (; isdigit(_peekBy(lexer, length)) || _peekBy(lexer, length) == '.'; ++length)
+		{
+			if (_peekBy(lexer, length) == '.') ++dotsCount;
 		}
 
 		if (dotsCount > 1)
@@ -230,33 +242,15 @@ static int _tryCreateLiteralToken(
 		}
 		else if (dotsCount == 1)
 		{
-			if (strncmp(lexer->current + length, "f", 1) == 0)
-			{
-				*token = _float32LiteralToken(lexer->current, length, lexer->location);
-				_moveBy(lexer, length + 1);
-				return TOKEN_FLOAT32_LITERAL;
-			}
-			else
-			{
-				*token = _float64LiteralToken(lexer->current, length, lexer->location);
-				_moveBy(lexer, length);
-				return TOKEN_FLOAT64_LITERAL;
-			}
+			*token = _float32LiteralToken(lexer->current, length, lexer->location);
+			_moveBy(lexer, length);
+			return TOKEN_FLOAT32_LITERAL;
 		}
 		else
 		{
-			if (strncmp(lexer->current + length, "u", 1) == 0)
-			{
-				*token = _uint32LiteralToken(lexer->current, length, lexer->location);
-				_moveBy(lexer, length + 1);
-				return TOKEN_UINT32_LITERAL;
-			}
-			else
-			{
-				*token = _int32LiteralToken(lexer->current, length, lexer->location);
-				_moveBy(lexer, length);
-				return TOKEN_INT32_LITERAL;
-			}
+			*token = _int32LiteralToken(lexer->current, length, lexer->location);
+			_moveBy(lexer, length);
+			return TOKEN_INT32_LITERAL;
 		}
 
 		return 0;
@@ -265,7 +259,7 @@ static int _tryCreateLiteralToken(
 	{
 		_moveBy(lexer, 1);
 		unsigned int length = 0;
-		for (; _peek(lexer, length) != '\"'; ++length);
+		for (; _peekBy(lexer, length) != '\"'; ++length);
 		*token = _stringLiteralToken(lexer->current, length, lexer->location);
 		_moveBy(lexer, length + 1);
 		return TOKEN_STRING_LITERAL;
@@ -350,20 +344,18 @@ void _nextToken(
 			_tryCreateMetaToken(lexer, token, TOKEN_COMMA, STORAGE_NONE, 1);
 		} break;
 
-		static_assert(0, "TODO: implement new tokens!");
-		/*
 		case '&':
 		{
 			switch (_peekBy(lexer, 1))
 			{
 				case '&':
 				{
-					static_assert(0, "TODO: implement logical AND!");
+					_tryCreateMetaToken(lexer, token, TOKEN_LOGICAL_AND, STORAGE_NONE, 2);
 				} break;
 
 				default:
 				{
-					static_assert(0, "TODO: implement bitwise AND!");
+					_tryCreateMetaToken(lexer, token, TOKEN_BITWISE_AND, STORAGE_NONE, 1);
 				} break;
 			}
 		} break;
@@ -374,24 +366,35 @@ void _nextToken(
 			{
 				case '|':
 				{
-					static_assert(0, "TODO: implement logical OR!");
+					_tryCreateMetaToken(lexer, token, TOKEN_LOGICAL_OR, STORAGE_NONE, 2);
 				} break;
 
 				default:
 				{
-					static_assert(0, "TODO: implement bitwise OR!");
+					_tryCreateMetaToken(lexer, token, TOKEN_BITWISE_OR, STORAGE_NONE, 1);
 				} break;
 			}
 		} break;
 
 		case '~':
 		{
-			static_assert(0, "TODO: implement bitwise NOT!");
+			_tryCreateMetaToken(lexer, token, TOKEN_BITWISE_NOT, STORAGE_NONE, 1);
 		} break;
 
 		case '!':
 		{
-			static_assert(0, "TODO: implement logical NOT!");
+			switch (_peekBy(lexer, 1))
+			{
+				case '=':
+				{
+					_tryCreateMetaToken(lexer, token, TOKEN_NOT_EQUAL, STORAGE_NONE, 2);
+				} break;
+
+				default:
+				{
+					_tryCreateMetaToken(lexer, token, TOKEN_LOGICAL_NOT, STORAGE_NONE, 1);
+				} break;
+			}
 		} break;
 
 		case '=':
@@ -400,16 +403,127 @@ void _nextToken(
 			{
 				case '=':
 				{
-					static_assert(0, "TODO: implement logical NOT!");
+					_tryCreateMetaToken(lexer, token, TOKEN_EQUAL, STORAGE_NONE, 2);
 				} break;
 
 				default:
 				{
-					static_assert(0, "TODO: implement asignment operator!");
+					_tryCreateMetaToken(lexer, token, TOKEN_ASSIGNMENT, STORAGE_NONE, 1);
 				} break;
 			}
 		} break;
-		*/
+
+		case '<':
+		{
+			switch (_peekBy(lexer, 1))
+			{
+				case '=':
+				{
+					_tryCreateMetaToken(lexer, token, TOKEN_LESS_THAN_OR_EQUAL, STORAGE_NONE, 2);
+				} break;
+
+				default:
+				{
+					_tryCreateMetaToken(lexer, token, TOKEN_LESS_THAN, STORAGE_NONE, 1);
+				} break;
+			}
+		} break;
+
+		case '>':
+		{
+			switch (_peekBy(lexer, 1))
+			{
+				case '=':
+				{
+					_tryCreateMetaToken(lexer, token, TOKEN_GREATER_THAN_OR_EQUAL, STORAGE_NONE, 2);
+				} break;
+
+				default:
+				{
+					_tryCreateMetaToken(lexer, token, TOKEN_GREATER_THAN, STORAGE_NONE, 1);
+				} break;
+			}
+		} break;
+
+		case '+':
+		{
+			switch (_peekBy(lexer, 1))
+			{
+				case '=':
+				{
+					_tryCreateMetaToken(lexer, token, TOKEN_PLUS_EQUAL, STORAGE_NONE, 2);
+				} break;
+
+				default:
+				{
+					_tryCreateMetaToken(lexer, token, TOKEN_PLUS, STORAGE_NONE, 1);
+				} break;
+			}
+		} break;
+
+		case '-':
+		{
+			switch (_peekBy(lexer, 1))
+			{
+				case '=':
+				{
+					_tryCreateMetaToken(lexer, token, TOKEN_MINUS_EQUAL, STORAGE_NONE, 2);
+				} break;
+
+				default:
+				{
+					_tryCreateMetaToken(lexer, token, TOKEN_MINUS, STORAGE_NONE, 1);
+				} break;
+			}
+		} break;
+
+		case '*':
+		{
+			switch (_peekBy(lexer, 1))
+			{
+				case '=':
+				{
+					_tryCreateMetaToken(lexer, token, TOKEN_MULTIPLY_EQUAL, STORAGE_NONE, 2);
+				} break;
+
+				default:
+				{
+					_tryCreateMetaToken(lexer, token, TOKEN_MULTIPLY, STORAGE_NONE, 1);
+				} break;
+			}
+		} break;
+
+		case '/':
+		{
+			switch (_peekBy(lexer, 1))
+			{
+				case '=':
+				{
+					_tryCreateMetaToken(lexer, token, TOKEN_DIVIDE_EQUAL, STORAGE_NONE, 2);
+				} break;
+
+				default:
+				{
+					_tryCreateMetaToken(lexer, token, TOKEN_DIVIDE, STORAGE_NONE, 1);
+				} break;
+			}
+		} break;
+
+		case '%':
+		{
+			switch (_peekBy(lexer, 1))
+			{
+				case '=':
+				{
+					_tryCreateMetaToken(lexer, token, TOKEN_MODULUS_EQUAL, STORAGE_NONE, 2);
+				} break;
+
+				default:
+				{
+					_tryCreateMetaToken(lexer, token, TOKEN_MODULUS, STORAGE_NONE, 1);
+				} break;
+			}
+		} break;
 
 		case '\0':
 		{

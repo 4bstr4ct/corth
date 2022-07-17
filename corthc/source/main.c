@@ -8,6 +8,13 @@
 
 int main(int argc, char** argv)
 {
+	/*
+	const char* buffer = "-15";
+	signed int value = 0; 
+	sscanf(buffer, "%d", &value);
+	fprintf(stdout, "%d\n", value);
+	*/
+
 	const char* outputFile = _stringFlag(
 		"--output", "--output <path>", "output.nasm",
 		"Set output file path");
@@ -29,6 +36,5 @@ int main(int argc, char** argv)
 
 	// const char* sourceFlag = "D:\\Home\\projects\\corth\\examples\\example1.corth";
 	_parse(sourceFile);
-
 	return 0;
 }

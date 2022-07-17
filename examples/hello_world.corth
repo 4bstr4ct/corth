@@ -9,7 +9,7 @@
 // }
 // 
 
-proc main()
+proc main(argc : int32, argv : string[]) : int32
 {
 	print("Hello, World!\n");
 	return 0;
