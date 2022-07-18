@@ -7,4 +7,8 @@ digraph "_stringifyLocation"
   Node1 [label="_stringifyLocation",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Stringify a location structure to the format 'file=s, line=d, column=d'."];
   Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node2 [label="_stringifyToken",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$db/d58/group__TOKEN.html#ga64540ed8048da126162d7e49a6fef735",tooltip="Stringify a token with all its fields into a static chars buffer and return a pointer to that buffer'..."];
+  Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="_parse",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$d2/d72/parser_8c.html#aa13b44093a9b4f501c43f640be3790ec",tooltip=" "];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$d0/d29/main_8c.html#a3c04138a5bfe5d72780bb7e82a18e627",tooltip=" "];
 }

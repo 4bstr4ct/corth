@@ -79,3 +79,4 @@ out
 .venv
 helpers
 helpers/*
+CMakeLists.txt

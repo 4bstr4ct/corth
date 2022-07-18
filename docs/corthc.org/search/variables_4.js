@@ -1,7 +1,9 @@
 var searchData=
 [
-  ['f32_0',['f32',['../dd/def/struct__LiteralExpression.html#af051dddf0a2170167f31580a49822fea',1,'_LiteralExpression::f32()'],['../d8/dbf/union__TokenValue.html#a2a52a797ec00a21b1c1fbb9fd048bb4a',1,'_TokenValue::f32()']]],
-  ['f64_1',['f64',['../dd/def/struct__LiteralExpression.html#a6742472b067e82271f673c54212e72d4',1,'_LiteralExpression::f64()'],['../d8/dbf/union__TokenValue.html#ac299f18edf8caaf01f99371950e90490',1,'_TokenValue::f64()']]],
-  ['file_2',['file',['../d6/d8f/struct__Location.html#a8753a16c630de3166758a7a368af1c76',1,'_Location']]],
-  ['flags_3',['flags',['../d3/d4c/struct__FlagsCache.html#a607d23075c2bec7fc5f9100059d2417c',1,'_FlagsCache']]]
+  ['i16_0',['i16',['../d8/dbf/union__TokenValue.html#a02e0b774a0e1b99cee05f8c440c9139a',1,'_TokenValue']]],
+  ['i32_1',['i32',['../d8/dbf/union__TokenValue.html#a50eb3403c2f5dce8625dfa6cfab4dcd2',1,'_TokenValue']]],
+  ['i64_2',['i64',['../d8/dbf/union__TokenValue.html#ab5b06c9f1f4d2dcb6c7e195166813db4',1,'_TokenValue::i64()'],['../d7/d8b/union__FlagValue.html#abd5722497f966941813c2187bc75934a',1,'_FlagValue::i64()']]],
+  ['i8_3',['i8',['../d8/dbf/union__TokenValue.html#a0d4cdfa81a071b1dbf70ecbd466a2b1e',1,'_TokenValue']]],
+  ['identifier_4',['identifier',['../d8/dbf/union__TokenValue.html#a8c35745f9cfd92e07d0189a937b389d2',1,'_TokenValue']]],
+  ['isconst_5',['isConst',['../df/d50/struct__Procedure.html#a570a3916a174ae3f9e32cf83043ab0bf',1,'_Procedure']]]
 ];

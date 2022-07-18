@@ -1,7 +1,4 @@
 var searchData=
 [
-  ['s_0',['s',['../d7/d8b/union__FlagValue.html#aff4e63de642f9392b58e46f6d8a45190',1,'_FlagValue']]],
-  ['statement_1',['statement',['../df/d50/struct__Procedure.html#ad9fa2283051de19a8d62bb5970c833ab',1,'_Procedure']]],
-  ['storage_2',['storage',['../d8/df1/struct__Token.html#a7a18e70f7f75044b2db9aeda44966473',1,'_Token']]],
-  ['string_3',['string',['../dd/def/struct__LiteralExpression.html#adfa6bf2b516b0bce39b3f16673eba6d8',1,'_LiteralExpression::string()'],['../d8/dbf/union__TokenValue.html#af426731f5d3cf7ceb9bab2dbc2c4b516',1,'_TokenValue::string()']]]
+  ['type_0',['type',['../d8/df1/struct__Token.html#a23ae3cfbf9098f135ee045e17e0cede2',1,'_Token::type()'],['../d2/d58/struct__Flag.html#a56225f6a605548ba3e16e98241e73d0a',1,'_Flag::type()'],['../da/d73/struct__ProcedureArgument.html#a11a91aea42abc16506be197d6f387520',1,'_ProcedureArgument::type()'],['../df/d50/struct__Procedure.html#a5329ddafadc4654a967f0a6a6fd3cf01',1,'_Procedure::type()']]]
 ];

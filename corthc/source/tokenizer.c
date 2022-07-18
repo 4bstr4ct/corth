@@ -6,20 +6,23 @@
 #include <ctype.h>
 #include <stdio.h>
 
-static_assert(TOKEN_TYPES_COUNT == 65, "Outdated TOKEN_TYPES_COUNT value!");
+static_assert(TOKEN_TYPES_COUNT == 68, "Outdated TOKEN_TYPES_COUNT value!");
 
-static const char* const _stringifiedTokenTypes[TOKEN_TYPES_COUNT] =
+static const char* const _stringifiedTokenTypes[] =
 {
 	STRINGIFY_ENUM(TOKEN_IDENTIFIER),
 
-	STRINGIFY_ENUM(TOKEN_IF_KEYWORD),
 	STRINGIFY_ENUM(TOKEN_IMPORT_KEYWORD),
 	STRINGIFY_ENUM(TOKEN_EXPORT_KEYWORD),
 	STRINGIFY_ENUM(TOKEN_PROC_KEYWORD),
+	STRINGIFY_ENUM(TOKEN_CONSTPROC_KEYWORD),
+	STRINGIFY_ENUM(TOKEN_CONST_KEYWORD),
+	STRINGIFY_ENUM(TOKEN_IF_KEYWORD),
 	STRINGIFY_ENUM(TOKEN_WHILE_KEYWORD),
+	STRINGIFY_ENUM(TOKEN_END_KEYWORD),
 	STRINGIFY_ENUM(TOKEN_RETURN_KEYWORD),
-	STRINGIFY_ENUM(TOKEN_VAR_KEYWORD),
 
+	STRINGIFY_ENUM(TOKEN_VOID_KEYWORD),
 	STRINGIFY_ENUM(TOKEN_CHAR_KEYWORD),
 	STRINGIFY_ENUM(TOKEN_INT8_KEYWORD),
 	STRINGIFY_ENUM(TOKEN_UINT8_KEYWORD),
@@ -95,7 +98,7 @@ const char* _stringifyTokenType(const enum _TokenType element)
 
 static_assert(TOKEN_STORAGES_COUNT == 15, "Outdated TOKEN_STORAGES_COUNT value!");
 
-static const char* const _stringifiedTokenStorages[TOKEN_STORAGES_COUNT] =
+static const char* const _stringifiedTokenStorages[] =
 {
 	STRINGIFY_ENUM(STORAGE_NONE),
 
@@ -123,6 +126,18 @@ const char* _stringifyTokenStorage(const enum _TokenStorage element)
 		"UNKNOWN_TOKEN_STORAGE" : _stringifiedTokenStorages[element];
 }
 
+struct _Token _metaToken(
+	const enum _TokenType type,
+	const enum _TokenStorage storage,
+	const struct _Location location)
+{
+	struct _Token token = {0};
+	token.type = type;
+	token.storage = storage;
+	token.location = location;
+	return token;
+}
+
 struct _Token _identifierToken(
 	const char* const value,
 	const unsigned int length,
@@ -136,6 +151,7 @@ struct _Token _identifierToken(
 
 	assert(value != NULL);
 	token.value.identifier.buffer = (char*)malloc((length + 1) * sizeof(char));
+	assert(token.value.identifier.buffer != NULL);
 	memcpy(token.value.identifier.buffer, value, length);
 	token.value.identifier.buffer[length] = '\0';
 	token.value.identifier.length = length;
@@ -156,21 +172,10 @@ struct _Token _keywordToken(
 
 	assert(value != NULL);
 	token.value.keyword.buffer = (char*)malloc((length + 1) * sizeof(char));
+	assert(token.value.keyword.buffer != NULL);
 	memcpy(token.value.keyword.buffer, value, length);
 	token.value.keyword.buffer[length] = '\0';
 	token.value.keyword.length = length;
-	return token;
-}
-
-struct _Token _metaToken(
-	const enum _TokenType type,
-	const enum _TokenStorage storage,
-	const struct _Location location)
-{
-	struct _Token token = {0};
-	token.type = type;
-	token.storage = storage;
-	token.location = location;
 	return token;
 }
 
@@ -418,6 +423,7 @@ struct _Token _stringLiteralToken(
 
 	assert(value != NULL);
 	token.value.literal.string.buffer = (char*)malloc((length + 1) * sizeof(char));
+	assert(token.value.literal.string.buffer != NULL);
 	memcpy(token.value.literal.string.buffer, value, length);
 	token.value.literal.string.buffer[length] = '\0';
 	token.value.literal.string.length = length;
@@ -609,6 +615,7 @@ struct _Tokenizer _createTokenizer(
 	const unsigned int fileSize = ftell(file);
 	fseek(file, 0, SEEK_SET);
 	tokenizer.buffer = (char*)malloc((fileSize + 1) * sizeof(char));
+	assert(tokenizer.buffer != NULL);
 	fread(tokenizer.buffer, fileSize, sizeof(char), file);
 	fclose(file);
 
@@ -750,16 +757,18 @@ static int _tryCreateIdentifierOrKeywordToken(
 	unsigned int length = 0;
 	for (; isalpha(_peekBy(tokenizer, length)) || isdigit(_peekBy(tokenizer, length)); ++length);
 
-	static_assert(TOKEN_TYPES_COUNT == 65, "TOKEN_TYPES_COUNT is higher than accounted in _tryCreateIdentifierOrKeywordToken!");
-	#define KEYWORDS_COUNT 18
-	static const char* const keywords[KEYWORDS_COUNT] =
-	{ "if", "import", "export", "proc", "while", "return", "var",
-	  "char", "int8", "uint8", "int16", "uint16", "int32", "uint32",
-	  "int64", "uint64", "float32", "float64" };
-	static const enum _TokenType types[KEYWORDS_COUNT] =
-	{ TOKEN_IF_KEYWORD, TOKEN_IMPORT_KEYWORD, TOKEN_EXPORT_KEYWORD, TOKEN_PROC_KEYWORD, TOKEN_WHILE_KEYWORD, TOKEN_RETURN_KEYWORD, TOKEN_VAR_KEYWORD,
-	  TOKEN_CHAR_KEYWORD, TOKEN_INT8_KEYWORD, TOKEN_UINT8_KEYWORD, TOKEN_INT16_KEYWORD, TOKEN_UINT16_KEYWORD, TOKEN_INT32_KEYWORD, TOKEN_UINT32_KEYWORD,
-	  TOKEN_INT64_KEYWORD, TOKEN_UINT64_KEYWORD, TOKEN_FLOAT32_KEYWORD, TOKEN_FLOAT64_KEYWORD };
+	static_assert(TOKEN_TYPES_COUNT == 68, "TOKEN_TYPES_COUNT is higher than accounted in _tryCreateIdentifierOrKeywordToken!");
+	#define KEYWORDS_COUNT 21
+
+	static const char* const keywords[] =
+	{ "import", "export", "proc", "constproc", "const", "if", "while", "end", "return",
+	  "void", "char", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64" };
+	static_assert(KEYWORDS_COUNT == sizeof(keywords) / sizeof(const char* const), "size of keywords is not equal to KEYWORDS_COUNT!");
+
+	static const enum _TokenType types[] =
+	{ TOKEN_IMPORT_KEYWORD, TOKEN_EXPORT_KEYWORD, TOKEN_PROC_KEYWORD, TOKEN_CONSTPROC_KEYWORD, TOKEN_CONST_KEYWORD, TOKEN_IF_KEYWORD, TOKEN_WHILE_KEYWORD, TOKEN_END_KEYWORD, TOKEN_RETURN_KEYWORD,
+	  TOKEN_VOID_KEYWORD, TOKEN_CHAR_KEYWORD, TOKEN_INT8_KEYWORD, TOKEN_UINT8_KEYWORD, TOKEN_INT16_KEYWORD, TOKEN_UINT16_KEYWORD, TOKEN_INT32_KEYWORD, TOKEN_UINT32_KEYWORD, TOKEN_INT64_KEYWORD, TOKEN_UINT64_KEYWORD, TOKEN_FLOAT32_KEYWORD, TOKEN_FLOAT64_KEYWORD };
+	static_assert(KEYWORDS_COUNT == sizeof(types) / sizeof(const enum _TokenType), "size of types is not equal to KEYWORDS_COUNT!");
 
 	for (unsigned int index = 0; index < KEYWORDS_COUNT; ++index)
 	{
@@ -1144,11 +1153,10 @@ void _peekToken(
 	tokenizer->location = location;
 }
 
-enum _TokenType _expectToken(
+int _expectToken(
 	struct _Tokenizer* const tokenizer,
 	struct _Token* const token,
-	const enum _TokenType type,
-	const int strict)
+	const enum _TokenType type)
 {
 	_nextToken(tokenizer, token);
 
@@ -1156,12 +1164,7 @@ enum _TokenType _expectToken(
 	{
 		fprintf(stderr, "ERROR: expected token of type %s, but parsed %s!\n",
 			_stringifyTokenType(type), _stringifyTokenType(token->type));
-
-		if (strict)
-		{
-			exit(1);
-		}
 	}
 
-	return token->type;
+	return token->type == type;
 }

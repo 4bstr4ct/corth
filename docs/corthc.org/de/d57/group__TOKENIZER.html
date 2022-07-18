@@ -121,9 +121,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga429e3baa7b543c51dffef5fc335cd536"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d57/group__TOKENIZER.html#ga429e3baa7b543c51dffef5fc335cd536">_peekToken</a> (struct <a class="el" href="../../d6/d9d/struct__Tokenizer.html">_Tokenizer</a> *const tokenizer, struct <a class="el" href="../../d8/df1/struct__Token.html">_Token</a> *const token, const unsigned int offset)</td></tr>
 <tr class="memdesc:ga429e3baa7b543c51dffef5fc335cd536"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse and peek the next token without moving the parser.  <a href="../../de/d57/group__TOKENIZER.html#ga429e3baa7b543c51dffef5fc335cd536">More...</a><br /></td></tr>
 <tr class="separator:ga429e3baa7b543c51dffef5fc335cd536"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga548b0926f18ef581058b61275a96e171"><td class="memItemLeft" align="right" valign="top">enum <a class="el" href="../../db/d58/group__TOKEN.html#gaf3d9fdd7a0e17f28fdbf31f395236fea">_TokenType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d57/group__TOKENIZER.html#ga548b0926f18ef581058b61275a96e171">_expectToken</a> (struct <a class="el" href="../../d6/d9d/struct__Tokenizer.html">_Tokenizer</a> *const tokenizer, struct <a class="el" href="../../d8/df1/struct__Token.html">_Token</a> *const token, const enum <a class="el" href="../../db/d58/group__TOKEN.html#gaf3d9fdd7a0e17f28fdbf31f395236fea">_TokenType</a> type, const int strict)</td></tr>
-<tr class="memdesc:ga548b0926f18ef581058b61275a96e171"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the next token and compare to the expected type.  <a href="../../de/d57/group__TOKENIZER.html#ga548b0926f18ef581058b61275a96e171">More...</a><br /></td></tr>
-<tr class="separator:ga548b0926f18ef581058b61275a96e171"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga91b28d4db5a76458b6960c6c3e3a1c5e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d57/group__TOKENIZER.html#ga91b28d4db5a76458b6960c6c3e3a1c5e">_expectToken</a> (struct <a class="el" href="../../d6/d9d/struct__Tokenizer.html">_Tokenizer</a> *const tokenizer, struct <a class="el" href="../../d8/df1/struct__Token.html">_Token</a> *const token, const enum <a class="el" href="../../db/d58/group__TOKEN.html#gaf3d9fdd7a0e17f28fdbf31f395236fea">_TokenType</a> type)</td></tr>
+<tr class="memdesc:ga91b28d4db5a76458b6960c6c3e3a1c5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the next token and compare to the expected type.  <a href="../../de/d57/group__TOKENIZER.html#ga91b28d4db5a76458b6960c6c3e3a1c5e">More...</a><br /></td></tr>
+<tr class="separator:ga91b28d4db5a76458b6960c6c3e3a1c5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function Documentation</h2>
@@ -171,17 +171,23 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Deallocate and free all tokenizer's resources and fields that were allocated on heap. </p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
 
 </div>
 </div>
-<a id="ga548b0926f18ef581058b61275a96e171" name="ga548b0926f18ef581058b61275a96e171"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga548b0926f18ef581058b61275a96e171">&#9670;&nbsp;</a></span>_expectToken()</h2>
+<a id="ga91b28d4db5a76458b6960c6c3e3a1c5e" name="ga91b28d4db5a76458b6960c6c3e3a1c5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga91b28d4db5a76458b6960c6c3e3a1c5e">&#9670;&nbsp;</a></span>_expectToken()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="../../db/d58/group__TOKEN.html#gaf3d9fdd7a0e17f28fdbf31f395236fea">_TokenType</a> _expectToken </td>
+          <td class="memname">int _expectToken </td>
           <td>(</td>
           <td class="paramtype">struct <a class="el" href="../../d6/d9d/struct__Tokenizer.html">_Tokenizer</a> *const&#160;</td>
           <td class="paramname"><em>tokenizer</em>, </td>
@@ -196,13 +202,7 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const enum <a class="el" href="../../db/d58/group__TOKEN.html#gaf3d9fdd7a0e17f28fdbf31f395236fea">_TokenType</a>&#160;</td>
-          <td class="paramname"><em>type</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>strict</em>&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -213,11 +213,11 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Parse the next token and compare to the expected type. </p>
-<p >If strict flag is non-zero, the program will terminate in case of type mis-match. The function returns the parsed token's type. </p>
+<p >If strict flag is non-zero, the program will terminate in case of type mis-match. The function returns the 0 if parsed token type is not the expected one, and 1 if it is the expected type. </p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><!-- SVG 1 -->
+<div class="center"><!-- SVG 2 -->
 </div>
 </div>
 
@@ -253,7 +253,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><!-- SVG 2 -->
+<div class="center"><!-- SVG 3 -->
 </div>
 </div>
 
@@ -295,7 +295,13 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><!-- SVG 3 -->
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 5 -->
 </div>
 </div>
 

@@ -8,6 +8,7 @@
 
 
 
+/*
 enum _LiteralExpressionType
 {
 	LITERAL_EXPRESSION_IDENTIFIER	=  0,
@@ -118,6 +119,7 @@ struct _Procedure
 	const char* name;
 	struct _Statement* statement;
 };
+*/
 
 
 

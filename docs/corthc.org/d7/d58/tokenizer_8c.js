@@ -7,7 +7,7 @@ var tokenizer_8c =
     [ "_createTokenizer", "de/d57/group__TOKENIZER.html#ga7bca1d5f232ec0cf9bb4d24dacb9332a", null ],
     [ "_destroyToken", "db/d58/group__TOKEN.html#ga61edee5614ff6fdcf25a38f93d09e906", null ],
     [ "_destroyTokenizer", "de/d57/group__TOKENIZER.html#ga019d7eaeb970ab79e862f22d7e840e48", null ],
-    [ "_expectToken", "de/d57/group__TOKENIZER.html#ga548b0926f18ef581058b61275a96e171", null ],
+    [ "_expectToken", "de/d57/group__TOKENIZER.html#ga91b28d4db5a76458b6960c6c3e3a1c5e", null ],
     [ "_float32LiteralToken", "db/d58/group__TOKEN.html#ga89cfc7ff3372e689fcf8b06ce74b7b7d", null ],
     [ "_float64LiteralToken", "db/d58/group__TOKEN.html#ga9c5e51208374d025b61c48db1083c3a4", null ],
     [ "_identifierToken", "db/d58/group__TOKEN.html#gad4571d502062373b73889c791787fb6b", null ],

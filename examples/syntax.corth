@@ -1,0 +1,30 @@
+
+import "std.io.corth"
+
+
+constproc(void) hello():
+	print("Hello, World!\n");
+end
+
+
+constproc(float64) pi():
+	return 3.14159265358979323846264338327950;
+end
+
+
+constproc(int32) toInt32(float64 value):
+	return (int32)value;
+end
+
+
+proc(int32) main(int32 argc, string[] argv):
+	hello();
+
+	int32 roundedValue = toInt32(pi());
+
+	if roundedValue == 3:
+		print("Rounded PI to int32 is 3\n");
+	end
+
+	return 0;
+end

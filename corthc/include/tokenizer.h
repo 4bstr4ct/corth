@@ -17,14 +17,17 @@ enum _TokenType
 {
 	TOKEN_IDENTIFIER				=  0,
 
-	TOKEN_IF_KEYWORD					,
 	TOKEN_IMPORT_KEYWORD				,
 	TOKEN_EXPORT_KEYWORD				,
 	TOKEN_PROC_KEYWORD					,
+	TOKEN_CONSTPROC_KEYWORD				,
+	TOKEN_CONST_KEYWORD					,
+	TOKEN_IF_KEYWORD					,
 	TOKEN_WHILE_KEYWORD					,
+	TOKEN_END_KEYWORD					,
 	TOKEN_RETURN_KEYWORD				,
-	TOKEN_VAR_KEYWORD					,
 
+	TOKEN_VOID_KEYWORD					,
 	TOKEN_CHAR_KEYWORD					,
 	TOKEN_INT8_KEYWORD					,
 	TOKEN_UINT8_KEYWORD					,
@@ -182,6 +185,15 @@ struct _Token
 };
 
 /**
+ * Create a meta token which has no value yet, but has a specified storage, type, and
+ * @ref _Location "location" of the token in the file.
+ */
+struct _Token _metaToken(
+	const enum _TokenType type,
+	const enum _TokenStorage storage,
+	const struct _Location location);
+
+/**
  * Create an identifier token with provided value - the name of the identifier, value's
  * length, a @ref TOKEN_IDENTIFIER "identifier token type", and @ref _Location "location"
  * of the token in the file.
@@ -199,15 +211,6 @@ struct _Token _keywordToken(
 	const char* const value,
 	const unsigned int length,
 	const enum _TokenType type,
-	const struct _Location location);
-
-/**
- * Create a meta token which has no value yet, but has a specified storage, type, and
- * @ref _Location "location" of the token in the file.
- */
-struct _Token _metaToken(
-	const enum _TokenType type,
-	const enum _TokenStorage storage,
 	const struct _Location location);
 
 /**
@@ -411,14 +414,13 @@ void _peekToken(
 
 /**
  * Parse the next token and compare to the expected type. If strict flag is non-zero, the
- * program will terminate in case of type mis-match. The function returns the parsed
- * token's type.
+ * program will terminate in case of type mis-match. The function returns the 0 if parsed
+ * token type is not the expected one, and 1 if it is the expected type.
  */
-enum _TokenType _expectToken(
+int _expectToken(
 	struct _Tokenizer* const tokenizer,
 	struct _Token* const token,
-	const enum _TokenType type,
-	const int strict);
+	const enum _TokenType type);
 
 /**
  * @}

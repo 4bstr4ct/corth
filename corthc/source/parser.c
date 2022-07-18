@@ -9,6 +9,8 @@
 
 
 
+#if 0
+
 #pragma region EXPRESSION API
 
 static_assert(LITERAL_EXPRESSION_TYPES_COUNT == 13, "LITERAL_EXPRESSION_TYPES_COUNT is higher than accounted in _stringifiedLiteralExpressionTypes!");
@@ -53,6 +55,7 @@ static struct _LiteralExpression _parseLiteralExpression(
 		{
 			const unsigned int length = token.value.identifier.length;
 			expression.identifier.buffer = (char*)malloc((length + 1) * sizeof(char));
+			assert(expression.identifier.buffer != NULL);
 			memcpy(expression.identifier.buffer, token.value.identifier.buffer, length);
 			expression.identifier.buffer[length] = '\0';
 			expression.identifier.length = length;
@@ -116,10 +119,11 @@ static struct _LiteralExpression _parseLiteralExpression(
 		case TOKEN_STRING_LITERAL:
 		{
 			const unsigned int length = token.value.literal.string.length;
-			expression.identifier.buffer = (char*)malloc((length + 1) * sizeof(char));
-			memcpy(expression.identifier.buffer, token.value.literal.string.buffer, length);
-			expression.identifier.buffer[length] = '\0';
-			expression.identifier.length = length;
+			expression.literal.string.buffer = (char*)malloc((length + 1) * sizeof(char));
+			assert(expression.literal.string.buffer != NULL);
+			memcpy(expression.literal.string.buffer, token.value.literal.string.buffer, length);
+			expression.literal.string.buffer[length] = '\0';
+			expression.literal.string.length = length;
 		} break;
 
 		case TOKEN_LEFT_PARENTHESIS:
@@ -260,6 +264,8 @@ static struct _Statement* _parseStatement(struct _Tokenizer* const tokenizer)
 			_expectToken(tokenizer, &token, TOKEN_SEMICOLON, 1);
 		} break;
 
+		// TODO: ANY TYPE POSSIBLE HERE!
+		/*
 		case TOKEN_VAR_KEYWORD:
 		{
 			_expectToken(tokenizer, &token, TOKEN_VAR_KEYWORD, 1);
@@ -268,6 +274,7 @@ static struct _Statement* _parseStatement(struct _Tokenizer* const tokenizer)
 			// Parse expression ...
 			_expectToken(tokenizer, &token, TOKEN_SEMICOLON, 1);
 		} break;
+		*/
 
 		default:
 		{
@@ -346,21 +353,422 @@ static struct _Procedure _parseProcedure(struct _Tokenizer* const tokenizer)
 
 #pragma endregion
 
+#endif
 
 
 
+
+
+struct _ProcedureArgument
+{
+	struct
+	{
+		char* buffer;
+		unsigned int length;
+	} type;
+	struct
+	{
+		char* buffer;
+		unsigned int length;
+	} name;
+	struct _ProcedureArgument* next;
+};
+
+struct _Procedure
+{
+	int isConst;
+	struct
+	{
+		char* buffer;
+		unsigned int length;
+	} name;
+	struct
+	{
+		char* buffer;
+		unsigned int length;
+	} type;
+	struct _ProcedureArgument* firstArgument;
+};
+
+static struct _Procedure _parseProcedure(
+	struct _Tokenizer* const tokenizer)
+{
+	struct _Procedure procedure = {0};
+	struct _Token token = {0};
+
+	// Parsing proc / constproc
+	_nextToken(tokenizer, &token);
+	switch (token.type)
+	{
+		case TOKEN_PROC_KEYWORD:
+		{
+			procedure.isConst = 0;
+		} break;
+
+		case TOKEN_CONSTPROC_KEYWORD:
+		{
+			procedure.isConst = 1;
+		} break;
+
+		default:
+		{
+			fprintf(stderr, "ERROR: expected TOKEN_PROC_KEYWORD or TOKEN_CONSTPROC_KEYWORD token, but parsed:\n\t%s\n", _stringifyToken(&token));
+			_destroyToken(&token);
+			exit(1);
+		} break;
+	}
+	_destroyToken(&token);
+
+	// Parsing return type
+	if (!_expectToken(tokenizer, &token, TOKEN_LEFT_PARENTHESIS))
+	{
+		fprintf(stderr, "ERROR: expected TOKEN_LEFT_PARENTHESIS token, but parsed %s\n", _stringifyToken(&token));
+		_destroyToken(&token);
+		exit(1);
+	}
+
+	_destroyToken(&token);
+	_nextToken(tokenizer, &token);
+
+	#define SET_DYNAMIC_STRING(stringStructure, source, sourceLength) \
+		{ \
+			stringStructure.buffer = (char*)malloc((sourceLength + 1) * sizeof(char)); \
+			assert(stringStructure.buffer != NULL); \
+			memcpy(stringStructure.buffer, source, sourceLength); \
+			stringStructure.buffer[sourceLength] = '\0'; \
+			stringStructure.length = sourceLength; \
+		}
+
+	switch (token.type)
+	{
+		case TOKEN_VOID_KEYWORD:
+		{
+			SET_DYNAMIC_STRING(procedure.type, "void", 4);
+		} break;
+
+		case TOKEN_CHAR_KEYWORD:
+		{
+			SET_DYNAMIC_STRING(procedure.type, "char", 4);
+		} break;
+
+		case TOKEN_INT8_KEYWORD:
+		{
+			SET_DYNAMIC_STRING(procedure.type, "int8", 4);
+		} break;
+
+		case TOKEN_UINT8_KEYWORD:
+		{
+			SET_DYNAMIC_STRING(procedure.type, "uint8", 5);
+		} break;
+
+		case TOKEN_INT16_KEYWORD:
+		{
+			SET_DYNAMIC_STRING(procedure.type, "int16", 5);
+		} break;
+
+		case TOKEN_UINT16_KEYWORD:
+		{
+			SET_DYNAMIC_STRING(procedure.type, "uint16", 6);
+		} break;
+
+		case TOKEN_INT32_KEYWORD:
+		{
+			SET_DYNAMIC_STRING(procedure.type, "int32", 5);
+		} break;
+
+		case TOKEN_UINT32_KEYWORD:
+		{
+			SET_DYNAMIC_STRING(procedure.type, "uint32", 6);
+		} break;
+
+		case TOKEN_INT64_KEYWORD:
+		{
+			SET_DYNAMIC_STRING(procedure.type, "int64", 5);
+		} break;
+
+		case TOKEN_UINT64_KEYWORD:
+		{
+			SET_DYNAMIC_STRING(procedure.type, "uint64", 6);
+		} break;
+
+		case TOKEN_FLOAT32_KEYWORD:
+		{
+			SET_DYNAMIC_STRING(procedure.type, "float32", 7);
+		} break;
+
+		case TOKEN_FLOAT64_KEYWORD:
+		{
+			SET_DYNAMIC_STRING(procedure.type, "float64", 7);
+		} break;
+
+		// Edge case for user-defined types. Must have some sort of checks!
+		case TOKEN_IDENTIFIER:
+		{
+			SET_DYNAMIC_STRING(procedure.type, token.value.identifier.buffer, token.value.identifier.length);
+		} break;
+
+		default:
+		{
+			fprintf(stderr, "ERROR: expected TOKEN_LEFT_PARENTHESIS token, but parsed %s\n", _stringifyToken(&token));
+			_destroyToken(&token);
+			exit(1);
+		} break;
+	}
+
+	_destroyToken(&token);
+	if (!_expectToken(tokenizer, &token, TOKEN_RIGHT_PARENTHESIS))
+	{
+		fprintf(stderr, "ERROR: expected TOKEN_RIGHT_PARENTHESIS token, but parsed %s\n", _stringifyToken(&token));
+		_destroyToken(&token);
+		exit(1);
+	}
+
+	_destroyToken(&token);
+	if (!_expectToken(tokenizer, &token, TOKEN_IDENTIFIER))
+	{
+		fprintf(stderr, "ERROR: expected TOKEN_IDENTIFIER token, but parsed %s\n", _stringifyToken(&token));
+		_destroyToken(&token);
+		exit(1);
+	}
+
+	SET_DYNAMIC_STRING(
+		procedure.name,
+		token.value.identifier.buffer,
+		token.value.identifier.length
+	);
+
+	_destroyToken(&token);
+	if (!_expectToken(tokenizer, &token, TOKEN_LEFT_PARENTHESIS))
+	{
+		fprintf(stderr, "ERROR: expected TOKEN_LEFT_PARENTHESIS token, but parsed %s\n", _stringifyToken(&token));
+		_destroyToken(&token);
+		exit(1);
+	}
+
+	_destroyToken(&token);
+	struct _ProcedureArgument* end = NULL;
+
+	while (token.type != TOKEN_RIGHT_PARENTHESIS)
+	{
+		struct _Token typeToken = {0};
+		_nextToken(tokenizer, &typeToken);
+		if (typeToken.type < TOKEN_VOID_KEYWORD || typeToken.type > TOKEN_FLOAT64_KEYWORD)
+		{
+			fprintf(stderr, "ERROR: expected TOKEN_<TYPE>_KEYWORD token, but parsed %s\n", _stringifyToken(&typeToken));
+			_destroyToken(&typeToken);
+			exit(1);
+		}
+
+		struct _Token nameToken = {0};
+		if (!_expectToken(tokenizer, &nameToken, TOKEN_IDENTIFIER))
+		{
+			fprintf(stderr, "ERROR: expected TOKEN_<TYPE>_KEYWORD token, but parsed %s\n", _stringifyToken(&nameToken));
+			_destroyToken(&nameToken);
+			exit(1);
+		}
+
+		struct _ProcedureArgument* newArgument = (struct _ProcedureArgument*)malloc(sizeof(struct _ProcedureArgument));
+		SET_DYNAMIC_STRING(newArgument->type, typeToken.value.keyword.buffer, typeToken.value.keyword.length);
+		SET_DYNAMIC_STRING(newArgument->name, nameToken.value.identifier.buffer, nameToken.value.identifier.length);
+		newArgument->next = NULL;
+
+		if (end != NULL)
+		{
+			end->next = newArgument;
+			end = end->next;
+		}
+		else
+		{
+			assert(procedure.firstArgument == NULL);
+			procedure.firstArgument = end = newArgument;
+		}
+
+		_destroyToken(&typeToken);
+		_destroyToken(&nameToken);
+
+		struct _Token commaToken = {0};
+		_destroyToken(&token);
+		_nextToken(tokenizer, &token);
+
+		if (token.type != TOKEN_COMMA && token.type != TOKEN_RIGHT_PARENTHESIS)
+		{
+			fprintf(stderr, "ERROR: expected TOKEN_COMMA or TOKEN_RIGHT_PARENTHESIS token, but parsed %s\n", _stringifyToken(&token));
+			_destroyToken(&token);
+			exit(1);
+		}
+		_destroyToken(&token);
+	}
+
+	_destroyToken(&token);
+	if (!_expectToken(tokenizer, &token, TOKEN_COLON))
+	{
+		fprintf(stderr, "ERROR: expected TOKEN_COLON token, but parsed %s\n", _stringifyToken(&token));
+		_destroyToken(&token);
+		exit(1);
+	}
+
+	_destroyToken(&token);
+	if (!_expectToken(tokenizer, &token, TOKEN_END_KEYWORD))
+	{
+		fprintf(stderr, "ERROR: expected TOKEN_END_KEYWORD token, but parsed %s\n", _stringifyToken(&token));
+		_destroyToken(&token);
+		exit(1);
+	}
+
+	_destroyToken(&token);
+	return procedure;
+}
+
+void _printProcedure(
+	const struct _Procedure* const procedure)
+{
+	assert(procedure != NULL);
+
+	fprintf(stdout, "%s", procedure->isConst ? "constproc" : "proc");
+	fprintf(stdout, "(%s)", procedure->type.buffer);
+	fprintf(stdout, " %s(", procedure->name.buffer);
+
+	struct _ProcedureArgument* iterator = procedure->firstArgument;
+	while (iterator != NULL)
+	{
+		fprintf(stdout, "%s %s", iterator->type.buffer, iterator->name.buffer);
+		if (iterator->next != NULL) fprintf(stdout, ", ");
+		iterator = iterator->next;
+	}
+
+	fprintf(stdout, "):\n");
+	fprintf(stdout, "\t// Do something here ...\n");
+	fprintf(stdout, "end\n");
+}
+
+void _parseExample_HelloWorld(
+	struct _Tokenizer* const tokenizer)
+{
+	struct _Token token = {0};
+	_peekToken(tokenizer, &token, 0);
+
+	if (token.type == TOKEN_PROC_KEYWORD || token.type == TOKEN_CONSTPROC_KEYWORD)
+	{
+		struct _Procedure procedure = _parseProcedure(tokenizer);
+		_printProcedure(&procedure);
+	}
+
+	/*
+	if (!_expectToken(tokenizer, &token, TOKEN_PROC_KEYWORD))
+	{
+		_destroyToken(&token);
+		fprintf(stderr, "ERROR: expected TOKEN_PROC_KEYWORD token, but parsed %s\n", _stringifyToken(&token));
+		exit(1);
+	}
+
+	_destroyToken(&token);
+	if (!_expectToken(tokenizer, &token, TOKEN_LEFT_PARENTHESIS))
+	{
+		_destroyToken(&token);
+		fprintf(stderr, "ERROR: expected TOKEN_LEFT_PARENTHESIS token, but parsed %s\n", _stringifyToken(&token));
+		exit(1);
+	}
+
+	_destroyToken(&token);
+	if (!_expectToken(tokenizer, &token, TOKEN_INT32_KEYWORD))
+	{
+		_destroyToken(&token);
+		fprintf(stderr, "ERROR: expected TOKEN_INT32_KEYWORD token, but parsed %s\n", _stringifyToken(&token));
+		exit(1);
+	}
+
+	_destroyToken(&token);
+	if (!_expectToken(tokenizer, &token, TOKEN_RIGHT_PARENTHESIS))
+	{
+		_destroyToken(&token);
+		fprintf(stderr, "ERROR: expected TOKEN_RIGHT_PARENTHESIS token, but parsed %s\n", _stringifyToken(&token));
+		exit(1);
+	}
+
+	_destroyToken(&token);
+	if (!_expectToken(tokenizer, &token, TOKEN_IDENTIFIER))
+	{
+		_destroyToken(&token);
+		fprintf(stderr, "ERROR: expected TOKEN_IDENTIFIER token, but parsed %s\n", _stringifyToken(&token));
+		exit(1);
+	}
+
+	_destroyToken(&token);
+	if (!_expectToken(tokenizer, &token, TOKEN_LEFT_PARENTHESIS))
+	{
+		_destroyToken(&token);
+		fprintf(stderr, "ERROR: expected TOKEN_LEFT_PARENTHESIS token, but parsed %s\n", _stringifyToken(&token));
+		exit(1);
+	}
+
+	_destroyToken(&token);
+	if (!_expectToken(tokenizer, &token, TOKEN_RIGHT_PARENTHESIS))
+	{
+		_destroyToken(&token);
+		fprintf(stderr, "ERROR: expected TOKEN_RIGHT_PARENTHESIS token, but parsed %s\n", _stringifyToken(&token));
+		exit(1);
+	}
+
+	_destroyToken(&token);
+	if (!_expectToken(tokenizer, &token, TOKEN_COLON))
+	{
+		_destroyToken(&token);
+		fprintf(stderr, "ERROR: expected TOKEN_COLON token, but parsed %s\n", _stringifyToken(&token));
+		exit(1);
+	}
+
+	_destroyToken(&token);
+	if (!_expectToken(tokenizer, &token, TOKEN_RETURN_KEYWORD))
+	{
+		_destroyToken(&token);
+		fprintf(stderr, "ERROR: expected TOKEN_RETURN_KEYWORD token, but parsed %s\n", _stringifyToken(&token));
+		exit(1);
+	}
+
+	_destroyToken(&token);
+	if (!_expectToken(tokenizer, &token, TOKEN_INT32_LITERAL))
+	{
+		_destroyToken(&token);
+		fprintf(stderr, "ERROR: expected TOKEN_INT32_LITERAL token, but parsed %s\n", _stringifyToken(&token));
+		exit(1);
+	}
+
+	_destroyToken(&token);
+	if (!_expectToken(tokenizer, &token, TOKEN_SEMICOLON))
+	{
+		_destroyToken(&token);
+		fprintf(stderr, "ERROR: expected TOKEN_SEMICOLON token, but parsed %s\n", _stringifyToken(&token));
+		exit(1);
+	}
+
+	_destroyToken(&token);
+	if (!_expectToken(tokenizer, &token, TOKEN_END_KEYWORD))
+	{
+		_destroyToken(&token);
+		fprintf(stderr, "ERROR: expected TOKEN_END token, but parsed %s\n", _stringifyToken(&token));
+		exit(1);
+	}
+
+	_destroyToken(&token);
+	if (!_expectToken(tokenizer, &token, TOKEN_END_OF_FILE))
+	{
+		_destroyToken(&token);
+		fprintf(stderr, "ERROR: expected TOKEN_END_OF_FILE token, but parsed %s\n", _stringifyToken(&token));
+		exit(1);
+	}
+	_destroyToken(&token);
+	*/
+}
 
 void _parse(const char* filePath)
 {
-#if 0
+#if 1
 	struct _Tokenizer tokenizer = _createTokenizer(filePath);
-
-	_parseProcedure(&tokenizer);
-
+	_parseExample_HelloWorld(&tokenizer);
 	_destroyTokenizer(&tokenizer);
 #endif
 
-#if 1
+#if 0
 	struct _Tokenizer tokenizer = _createTokenizer(filePath);
 	struct _Token token = {0};
 
