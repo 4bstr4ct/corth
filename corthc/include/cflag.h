@@ -2,6 +2,12 @@
 #define _CFLAG_H_
 
 /**
+ * @addtogroup CFLAG
+ * 
+ * @{
+ */
+
+/**
  * A typedef for boolean.
  */
 typedef enum { false, true } bool;
@@ -79,5 +85,9 @@ void _parseFlags(
 	char** argv,
 	const enum _ParseOption option,
 	const char* const usage);
+
+/**
+ * @}
+ */
 
 #endif

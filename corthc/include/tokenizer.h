@@ -211,7 +211,7 @@ struct _Token _metaToken(
 	const struct _Location location);
 
 /**
- * Create a char literal token which has a char value, a @ref TOKEN_CHAR_LITERAL "char
+ * Create a char literal token which has a char value, a @ref TOKEN_CHAR_LITERAL "char 
  * literal token type", @ref STORAGE_CHAR "char storage", and @ref _Location "location"
  * of the token in the file.
  */
@@ -221,7 +221,7 @@ struct _Token _charLiteralToken(
 	const struct _Location location);
 
 /**
- * Create an int8 literal token which has an int8 value, a @ref TOKEN_INT8_LITERAL "int8
+ * Create an int8 literal token which has an int8 value, a @ref TOKEN_INT8_LITERAL "int8 
  * literal token type", @ref STORAGE_INT8 "int8 storage", and @ref _Location "location"
  * of the token in the file.
  */
