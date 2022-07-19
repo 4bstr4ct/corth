@@ -652,123 +652,17 @@ void _parseExample_HelloWorld(
 		struct _Procedure procedure = _parseProcedure(tokenizer);
 		_printProcedure(&procedure);
 	}
-
-	/*
-	if (!_expectToken(tokenizer, &token, TOKEN_PROC_KEYWORD))
-	{
-		_destroyToken(&token);
-		fprintf(stderr, "ERROR: expected TOKEN_PROC_KEYWORD token, but parsed %s\n", _stringifyToken(&token));
-		exit(1);
-	}
-
-	_destroyToken(&token);
-	if (!_expectToken(tokenizer, &token, TOKEN_LEFT_PARENTHESIS))
-	{
-		_destroyToken(&token);
-		fprintf(stderr, "ERROR: expected TOKEN_LEFT_PARENTHESIS token, but parsed %s\n", _stringifyToken(&token));
-		exit(1);
-	}
-
-	_destroyToken(&token);
-	if (!_expectToken(tokenizer, &token, TOKEN_INT32_KEYWORD))
-	{
-		_destroyToken(&token);
-		fprintf(stderr, "ERROR: expected TOKEN_INT32_KEYWORD token, but parsed %s\n", _stringifyToken(&token));
-		exit(1);
-	}
-
-	_destroyToken(&token);
-	if (!_expectToken(tokenizer, &token, TOKEN_RIGHT_PARENTHESIS))
-	{
-		_destroyToken(&token);
-		fprintf(stderr, "ERROR: expected TOKEN_RIGHT_PARENTHESIS token, but parsed %s\n", _stringifyToken(&token));
-		exit(1);
-	}
-
-	_destroyToken(&token);
-	if (!_expectToken(tokenizer, &token, TOKEN_IDENTIFIER))
-	{
-		_destroyToken(&token);
-		fprintf(stderr, "ERROR: expected TOKEN_IDENTIFIER token, but parsed %s\n", _stringifyToken(&token));
-		exit(1);
-	}
-
-	_destroyToken(&token);
-	if (!_expectToken(tokenizer, &token, TOKEN_LEFT_PARENTHESIS))
-	{
-		_destroyToken(&token);
-		fprintf(stderr, "ERROR: expected TOKEN_LEFT_PARENTHESIS token, but parsed %s\n", _stringifyToken(&token));
-		exit(1);
-	}
-
-	_destroyToken(&token);
-	if (!_expectToken(tokenizer, &token, TOKEN_RIGHT_PARENTHESIS))
-	{
-		_destroyToken(&token);
-		fprintf(stderr, "ERROR: expected TOKEN_RIGHT_PARENTHESIS token, but parsed %s\n", _stringifyToken(&token));
-		exit(1);
-	}
-
-	_destroyToken(&token);
-	if (!_expectToken(tokenizer, &token, TOKEN_COLON))
-	{
-		_destroyToken(&token);
-		fprintf(stderr, "ERROR: expected TOKEN_COLON token, but parsed %s\n", _stringifyToken(&token));
-		exit(1);
-	}
-
-	_destroyToken(&token);
-	if (!_expectToken(tokenizer, &token, TOKEN_RETURN_KEYWORD))
-	{
-		_destroyToken(&token);
-		fprintf(stderr, "ERROR: expected TOKEN_RETURN_KEYWORD token, but parsed %s\n", _stringifyToken(&token));
-		exit(1);
-	}
-
-	_destroyToken(&token);
-	if (!_expectToken(tokenizer, &token, TOKEN_INT32_LITERAL))
-	{
-		_destroyToken(&token);
-		fprintf(stderr, "ERROR: expected TOKEN_INT32_LITERAL token, but parsed %s\n", _stringifyToken(&token));
-		exit(1);
-	}
-
-	_destroyToken(&token);
-	if (!_expectToken(tokenizer, &token, TOKEN_SEMICOLON))
-	{
-		_destroyToken(&token);
-		fprintf(stderr, "ERROR: expected TOKEN_SEMICOLON token, but parsed %s\n", _stringifyToken(&token));
-		exit(1);
-	}
-
-	_destroyToken(&token);
-	if (!_expectToken(tokenizer, &token, TOKEN_END_KEYWORD))
-	{
-		_destroyToken(&token);
-		fprintf(stderr, "ERROR: expected TOKEN_END token, but parsed %s\n", _stringifyToken(&token));
-		exit(1);
-	}
-
-	_destroyToken(&token);
-	if (!_expectToken(tokenizer, &token, TOKEN_END_OF_FILE))
-	{
-		_destroyToken(&token);
-		fprintf(stderr, "ERROR: expected TOKEN_END_OF_FILE token, but parsed %s\n", _stringifyToken(&token));
-		exit(1);
-	}
-	_destroyToken(&token);
-	*/
 }
 
 void _parse(const char* filePath)
 {
-#if 0
+#if 1
 	struct _Tokenizer tokenizer = _createTokenizer(filePath);
 	_parseExample_HelloWorld(&tokenizer);
 	_destroyTokenizer(&tokenizer);
 #endif
 
-#if 1
+#if 0
 	struct _Tokenizer tokenizer = _createTokenizer(filePath);
 	struct _Token token = {0};
 
