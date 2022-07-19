@@ -125,6 +125,69 @@ struct _Procedure
 
 
 
+struct _CompoundExpression
+{
+	
+};
+
+enum _ExpressionType
+{
+	EXPRESSION_COMPOUND				=  0,
+	EXPRESSION_RETURN					,
+	EXPRESSION_LITERAL					,
+	EXPRESSION_PROCEDURE_CALL			,
+
+	EXPRESSION_TYPES_COUNT
+};
+
+struct _Expression
+{
+	enum _ExpressionType type;
+	struct _Location location;
+	union
+	{
+
+	} kind;
+};
+
+struct _Statement
+{
+	struct _Expression expression;
+	struct _Statement* next;
+};
+
+struct _ProcedureArgument
+{
+	struct
+	{
+		char* buffer;
+		unsigned int length;
+	} type;
+	struct
+	{
+		char* buffer;
+		unsigned int length;
+	} name;
+};
+
+struct _Procedure
+{
+	int isConst;
+	struct
+	{
+		char* buffer;
+		unsigned int length;
+	} type;
+	struct
+	{
+		char* buffer;
+		unsigned int length;
+	} name;
+	struct _ProcedureArgument* args;
+	unsigned int argsCount;
+	struct _Statement* body;
+};
+
 void _parse(const char* filePath);
 
 #endif

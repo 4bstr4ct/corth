@@ -359,6 +359,8 @@ static struct _Procedure _parseProcedure(struct _Tokenizer* const tokenizer)
 
 
 
+#if 0
+
 struct _ProcedureArgument
 {
 	struct
@@ -654,9 +656,21 @@ void _parseExample_HelloWorld(
 	}
 }
 
+#endif
+
+
+
+
+
 void _parse(const char* filePath)
 {
 #if 1
+	struct _Tokenizer tokenizer = _createTokenizer(filePath);
+	
+	_destroyTokenizer(&tokenizer);
+#endif
+
+#if 0
 	struct _Tokenizer tokenizer = _createTokenizer(filePath);
 	_parseExample_HelloWorld(&tokenizer);
 	_destroyTokenizer(&tokenizer);

@@ -18,8 +18,8 @@ constproc(float64) pi():
 end
 
 
-constproc(int32) toInt32(float64 value):
-	return (int32)value;
+proc(int32) linearSum(int32 begin, int32 end):
+	return ((end * (end + 1)) / 2) - (((begin - 1) * (begin)) / 2);
 end
 
 
@@ -27,11 +27,12 @@ proc(int32) main(int32 argc, string[] argv):
 	hello();
 
 	Data data;
-	data.value = toInt32(pi());
+	data.value = (int32)pi();
 
 	if data.value == 3:
 		print("Rounded PI to int32 is 3\n");
 	end
 
+	int32 sum = linearSum(1, data.value);
 	return 0;
 end
