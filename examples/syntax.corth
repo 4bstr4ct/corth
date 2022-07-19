@@ -2,6 +2,12 @@
 import "std.io.corth"
 
 
+struct Data
+{
+	int32 value;
+};
+
+
 constproc(void) hello():
 	print("Hello, World!\n");
 end
@@ -20,9 +26,10 @@ end
 proc(int32) main(int32 argc, string[] argv):
 	hello();
 
-	int32 roundedValue = toInt32(pi());
+	Data data;
+	data.value = toInt32(pi());
 
-	if roundedValue == 3:
+	if data.value == 3:
 		print("Rounded PI to int32 is 3\n");
 	end
 

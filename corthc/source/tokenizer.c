@@ -6,7 +6,7 @@
 #include <ctype.h>
 #include <stdio.h>
 
-static_assert(TOKEN_TYPES_COUNT == 68, "Outdated TOKEN_TYPES_COUNT value!");
+static_assert(TOKEN_TYPES_COUNT == 69, "Outdated TOKEN_TYPES_COUNT value!");
 
 static const char* const _stringifiedTokenTypes[] =
 {
@@ -19,21 +19,22 @@ static const char* const _stringifiedTokenTypes[] =
 	STRINGIFY_ENUM(TOKEN_CONST_KEYWORD),
 	STRINGIFY_ENUM(TOKEN_IF_KEYWORD),
 	STRINGIFY_ENUM(TOKEN_WHILE_KEYWORD),
+	STRINGIFY_ENUM(TOKEN_SCOPE_KEYWORD),
 	STRINGIFY_ENUM(TOKEN_END_KEYWORD),
 	STRINGIFY_ENUM(TOKEN_RETURN_KEYWORD),
 
-	STRINGIFY_ENUM(TOKEN_VOID_KEYWORD),
-	STRINGIFY_ENUM(TOKEN_CHAR_KEYWORD),
-	STRINGIFY_ENUM(TOKEN_INT8_KEYWORD),
-	STRINGIFY_ENUM(TOKEN_UINT8_KEYWORD),
-	STRINGIFY_ENUM(TOKEN_INT16_KEYWORD),
-	STRINGIFY_ENUM(TOKEN_UINT16_KEYWORD),
-	STRINGIFY_ENUM(TOKEN_INT32_KEYWORD),
-	STRINGIFY_ENUM(TOKEN_UINT32_KEYWORD),
-	STRINGIFY_ENUM(TOKEN_INT64_KEYWORD),
-	STRINGIFY_ENUM(TOKEN_UINT64_KEYWORD),
-	STRINGIFY_ENUM(TOKEN_FLOAT32_KEYWORD),
-	STRINGIFY_ENUM(TOKEN_FLOAT64_KEYWORD),
+	STRINGIFY_ENUM(TOKEN_VOID_TYPE),
+	STRINGIFY_ENUM(TOKEN_CHAR_TYPE),
+	STRINGIFY_ENUM(TOKEN_INT8_TYPE),
+	STRINGIFY_ENUM(TOKEN_UINT8_TYPE),
+	STRINGIFY_ENUM(TOKEN_INT16_TYPE),
+	STRINGIFY_ENUM(TOKEN_UINT16_TYPE),
+	STRINGIFY_ENUM(TOKEN_INT32_TYPE),
+	STRINGIFY_ENUM(TOKEN_UINT32_TYPE),
+	STRINGIFY_ENUM(TOKEN_INT64_TYPE),
+	STRINGIFY_ENUM(TOKEN_UINT64_TYPE),
+	STRINGIFY_ENUM(TOKEN_FLOAT32_TYPE),
+	STRINGIFY_ENUM(TOKEN_FLOAT64_TYPE),
 
 	STRINGIFY_ENUM(TOKEN_CHAR_LITERAL),
 	STRINGIFY_ENUM(TOKEN_INT8_LITERAL),
@@ -430,6 +431,24 @@ struct _Token _stringLiteralToken(
 	return token;
 }
 
+int _isKeywordToken(
+	const struct _Token* const token)
+{
+	return token->type >= FIRST_KEYWORD_TOKEN && token->type <= LAST_KEYWORD_TOKEN;
+}
+
+int _isTypeToken(
+	const struct _Token* const token)
+{
+	return token->type >= FIRST_TYPE_TOKEN && token->type <= LAST_TYPE_TOKEN;
+}
+
+int _isLiteralToken(
+	const struct _Token* const token)
+{
+	return token->type >= FIRST_LITERAL_TOKEN && token->type <= LAST_LITERAL_TOKEN;
+}
+
 struct _Token _invalidToken(
 	const struct _Location location)
 {
@@ -757,17 +776,17 @@ static int _tryCreateIdentifierOrKeywordToken(
 	unsigned int length = 0;
 	for (; isalpha(_peekBy(tokenizer, length)) || isdigit(_peekBy(tokenizer, length)); ++length);
 
-	static_assert(TOKEN_TYPES_COUNT == 68, "TOKEN_TYPES_COUNT is higher than accounted in _tryCreateIdentifierOrKeywordToken!");
-	#define KEYWORDS_COUNT 21
+	static_assert(TOKEN_TYPES_COUNT == 69, "TOKEN_TYPES_COUNT is higher than accounted in _tryCreateIdentifierOrKeywordToken!");
+	#define KEYWORDS_COUNT 22
 
 	static const char* const keywords[] =
-	{ "import", "export", "proc", "constproc", "const", "if", "while", "end", "return",
+	{ "import", "export", "proc", "constproc", "const", "if", "while", "scope", "end", "return",
 	  "void", "char", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64" };
 	static_assert(KEYWORDS_COUNT == sizeof(keywords) / sizeof(const char* const), "size of keywords is not equal to KEYWORDS_COUNT!");
 
 	static const enum _TokenType types[] =
-	{ TOKEN_IMPORT_KEYWORD, TOKEN_EXPORT_KEYWORD, TOKEN_PROC_KEYWORD, TOKEN_CONSTPROC_KEYWORD, TOKEN_CONST_KEYWORD, TOKEN_IF_KEYWORD, TOKEN_WHILE_KEYWORD, TOKEN_END_KEYWORD, TOKEN_RETURN_KEYWORD,
-	  TOKEN_VOID_KEYWORD, TOKEN_CHAR_KEYWORD, TOKEN_INT8_KEYWORD, TOKEN_UINT8_KEYWORD, TOKEN_INT16_KEYWORD, TOKEN_UINT16_KEYWORD, TOKEN_INT32_KEYWORD, TOKEN_UINT32_KEYWORD, TOKEN_INT64_KEYWORD, TOKEN_UINT64_KEYWORD, TOKEN_FLOAT32_KEYWORD, TOKEN_FLOAT64_KEYWORD };
+	{ TOKEN_IMPORT_KEYWORD, TOKEN_EXPORT_KEYWORD, TOKEN_PROC_KEYWORD, TOKEN_CONSTPROC_KEYWORD, TOKEN_CONST_KEYWORD, TOKEN_IF_KEYWORD, TOKEN_WHILE_KEYWORD, TOKEN_SCOPE_KEYWORD, TOKEN_END_KEYWORD, TOKEN_RETURN_KEYWORD,
+	  TOKEN_VOID_TYPE, TOKEN_CHAR_TYPE, TOKEN_INT8_TYPE, TOKEN_UINT8_TYPE, TOKEN_INT16_TYPE, TOKEN_UINT16_TYPE, TOKEN_INT32_TYPE, TOKEN_UINT32_TYPE, TOKEN_INT64_TYPE, TOKEN_UINT64_TYPE, TOKEN_FLOAT32_TYPE, TOKEN_FLOAT64_TYPE };
 	static_assert(KEYWORDS_COUNT == sizeof(types) / sizeof(const enum _TokenType), "size of types is not equal to KEYWORDS_COUNT!");
 
 	for (unsigned int index = 0; index < KEYWORDS_COUNT; ++index)

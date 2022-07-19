@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['parse_5flenient_0',['PARSE_LENIENT',['../d7/df9/group__CFLAG.html#gga0f9e5b94324b7dcdd4afeacfe22e306ba8f4a49a2341981e20593830fe5a0e7da',1,'cflag.h']]],
-  ['parse_5fstrict_1',['PARSE_STRICT',['../d7/df9/group__CFLAG.html#gga0f9e5b94324b7dcdd4afeacfe22e306baf92e666cba2d5595045680eab741477c',1,'cflag.h']]]
+  ['last_5fkeyword_5ftoken_0',['LAST_KEYWORD_TOKEN',['../db/d58/group__TOKEN.html#ggaf3d9fdd7a0e17f28fdbf31f395236feaa311cc76adfc71264040ba6ee836b445b',1,'tokenizer.h']]],
+  ['last_5fliteral_5ftoken_1',['LAST_LITERAL_TOKEN',['../db/d58/group__TOKEN.html#ggaf3d9fdd7a0e17f28fdbf31f395236feaa3ad3acd81577c377743479e3083537e8',1,'tokenizer.h']]],
+  ['last_5ftype_5ftoken_2',['LAST_TYPE_TOKEN',['../db/d58/group__TOKEN.html#ggaf3d9fdd7a0e17f28fdbf31f395236feaa685e21e607425c24194978369a63c523',1,'tokenizer.h']]]
 ];

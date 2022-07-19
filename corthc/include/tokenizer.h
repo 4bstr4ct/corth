@@ -17,30 +17,36 @@ enum _TokenType
 {
 	TOKEN_IDENTIFIER				=  0,
 
-	TOKEN_IMPORT_KEYWORD				,
+	FIRST_KEYWORD_TOKEN					,
+	TOKEN_IMPORT_KEYWORD			= FIRST_KEYWORD_TOKEN,
 	TOKEN_EXPORT_KEYWORD				,
 	TOKEN_PROC_KEYWORD					,
 	TOKEN_CONSTPROC_KEYWORD				,
 	TOKEN_CONST_KEYWORD					,
 	TOKEN_IF_KEYWORD					,
 	TOKEN_WHILE_KEYWORD					,
+	TOKEN_SCOPE_KEYWORD					,
 	TOKEN_END_KEYWORD					,
 	TOKEN_RETURN_KEYWORD				,
+	LAST_KEYWORD_TOKEN				= TOKEN_RETURN_KEYWORD,
 
-	TOKEN_VOID_KEYWORD					,
-	TOKEN_CHAR_KEYWORD					,
-	TOKEN_INT8_KEYWORD					,
-	TOKEN_UINT8_KEYWORD					,
-	TOKEN_INT16_KEYWORD					,
-	TOKEN_UINT16_KEYWORD				,
-	TOKEN_INT32_KEYWORD					,
-	TOKEN_UINT32_KEYWORD				,
-	TOKEN_INT64_KEYWORD					,
-	TOKEN_UINT64_KEYWORD				,
-	TOKEN_FLOAT32_KEYWORD				,
-	TOKEN_FLOAT64_KEYWORD				,
+	FIRST_TYPE_TOKEN					,
+	TOKEN_VOID_TYPE					= FIRST_TYPE_TOKEN,
+	TOKEN_CHAR_TYPE						,
+	TOKEN_INT8_TYPE						,
+	TOKEN_UINT8_TYPE					,
+	TOKEN_INT16_TYPE					,
+	TOKEN_UINT16_TYPE					,
+	TOKEN_INT32_TYPE					,
+	TOKEN_UINT32_TYPE					,
+	TOKEN_INT64_TYPE					,
+	TOKEN_UINT64_TYPE					,
+	TOKEN_FLOAT32_TYPE					,
+	TOKEN_FLOAT64_TYPE					,
+	LAST_TYPE_TOKEN					= TOKEN_FLOAT64_TYPE,
 
-	TOKEN_CHAR_LITERAL					,
+	FIRST_LITERAL_TOKEN					,
+	TOKEN_CHAR_LITERAL				= FIRST_LITERAL_TOKEN,
 	TOKEN_INT8_LITERAL					,
 	TOKEN_UINT8_LITERAL					,
 	TOKEN_INT16_LITERAL					,
@@ -52,6 +58,7 @@ enum _TokenType
 	TOKEN_FLOAT32_LITERAL				,
 	TOKEN_FLOAT64_LITERAL				,
 	TOKEN_STRING_LITERAL				,
+	LAST_LITERAL_TOKEN				= TOKEN_STRING_LITERAL,
 
 	TOKEN_LEFT_PARENTHESIS				,
 	TOKEN_RIGHT_PARENTHESIS				,
@@ -350,6 +357,27 @@ struct _Token _invalidToken(
  */
 void _destroyToken(
 	struct _Token* const token);
+
+/**
+ * Check if provided token's type is within the keyword tokens range in @ref _TokenType
+ * enum. The range is [ @ref FIRST_KEYWORD_TOKEN , @ref LAST_KEYWORD_TOKEN ] inclusively.
+ */
+int _isKeywordToken(
+	const struct _Token* const token);
+
+/**
+ * Check if provided token's type is within the type tokens range in @ref _TokenType
+ * enum. The range is [ @ref FIRST_TYPE_TOKEN , @ref LAST_TYPE_TOKEN ] inclusively.
+ */
+int _isTypeToken(
+	const struct _Token* const token);
+
+/**
+ * Check if provided token's type is within the literal tokens range in @ref _TokenType
+ * enum. The range is [ @ref FIRST_LITERAL_TOKEN , @ref LAST_LITERAL_TOKEN ] inclusively.
+ */
+int _isLiteralToken(
+	const struct _Token* const token);
 
 /**
  * Stringify a token with all its fields into a static chars buffer and return a pointer

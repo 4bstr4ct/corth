@@ -119,7 +119,7 @@ Macros</h2></td></tr>
 <tr class="separator:af08c1e3d7d23358e101241881153aeb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b20d41d6252e9871430c242cb1a56e7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d58/tokenizer_8c.html#a6b20d41d6252e9871430c242cb1a56e7">BUFFER_SIZE</a>&#160;&#160;&#160;256</td></tr>
 <tr class="separator:a6b20d41d6252e9871430c242cb1a56e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9fab585b35b349cc440afd2279074f88"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d58/tokenizer_8c.html#a9fab585b35b349cc440afd2279074f88">KEYWORDS_COUNT</a>&#160;&#160;&#160;21</td></tr>
+<tr class="memitem:a9fab585b35b349cc440afd2279074f88"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d58/tokenizer_8c.html#a9fab585b35b349cc440afd2279074f88">KEYWORDS_COUNT</a>&#160;&#160;&#160;22</td></tr>
 <tr class="separator:a9fab585b35b349cc440afd2279074f88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
@@ -175,6 +175,15 @@ Functions</h2></td></tr>
 <tr class="memitem:ga8c8af99621bd750f11e20a6965e32e6e"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../d8/df1/struct__Token.html">_Token</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d58/group__TOKEN.html#ga8c8af99621bd750f11e20a6965e32e6e">_stringLiteralToken</a> (const char *const value, const unsigned int length, const struct <a class="el" href="../../d6/d8f/struct__Location.html">_Location</a> location)</td></tr>
 <tr class="memdesc:ga8c8af99621bd750f11e20a6965e32e6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a string literal token which has a buffer and a length fields s a struct, a <a class="el" href="../../db/d58/group__TOKEN.html#ggaf3d9fdd7a0e17f28fdbf31f395236feaa7ed3e98b10f5d0b461a887fdd5b3dc01">string literal token type</a>, <a class="el" href="../../db/d58/group__TOKEN.html#gga802038b28d852e0ee88c2bcbf42184c9aed3917aa9ebb8c4eaaa3dab9ee7635ab">string</a>storage", and @ref _Location "location" of the token in the file.  <a href="../../db/d58/group__TOKEN.html#ga8c8af99621bd750f11e20a6965e32e6e">More...</a><br /></td></tr>
 <tr class="separator:ga8c8af99621bd750f11e20a6965e32e6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga13953786cf775fbe5a2cd20add105a6d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d58/group__TOKEN.html#ga13953786cf775fbe5a2cd20add105a6d">_isKeywordToken</a> (const struct <a class="el" href="../../d8/df1/struct__Token.html">_Token</a> *const token)</td></tr>
+<tr class="memdesc:ga13953786cf775fbe5a2cd20add105a6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if provided token's type is within the keyword tokens range in <a class="el" href="../../db/d58/group__TOKEN.html#gaf3d9fdd7a0e17f28fdbf31f395236fea">_TokenType</a> enum.  <a href="../../db/d58/group__TOKEN.html#ga13953786cf775fbe5a2cd20add105a6d">More...</a><br /></td></tr>
+<tr class="separator:ga13953786cf775fbe5a2cd20add105a6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0d46b27f15d1451864ec57472faeabc4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d58/group__TOKEN.html#ga0d46b27f15d1451864ec57472faeabc4">_isTypeToken</a> (const struct <a class="el" href="../../d8/df1/struct__Token.html">_Token</a> *const token)</td></tr>
+<tr class="memdesc:ga0d46b27f15d1451864ec57472faeabc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if provided token's type is within the type tokens range in <a class="el" href="../../db/d58/group__TOKEN.html#gaf3d9fdd7a0e17f28fdbf31f395236fea">_TokenType</a> enum.  <a href="../../db/d58/group__TOKEN.html#ga0d46b27f15d1451864ec57472faeabc4">More...</a><br /></td></tr>
+<tr class="separator:ga0d46b27f15d1451864ec57472faeabc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3dfee66ec7271150dc18af485a892f22"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d58/group__TOKEN.html#ga3dfee66ec7271150dc18af485a892f22">_isLiteralToken</a> (const struct <a class="el" href="../../d8/df1/struct__Token.html">_Token</a> *const token)</td></tr>
+<tr class="memdesc:ga3dfee66ec7271150dc18af485a892f22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if provided token's type is within the literal tokens range in <a class="el" href="../../db/d58/group__TOKEN.html#gaf3d9fdd7a0e17f28fdbf31f395236fea">_TokenType</a> enum.  <a href="../../db/d58/group__TOKEN.html#ga3dfee66ec7271150dc18af485a892f22">More...</a><br /></td></tr>
+<tr class="separator:ga3dfee66ec7271150dc18af485a892f22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafb992e0d4f2440ce500f2a6bc5a76351"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="../../d8/df1/struct__Token.html">_Token</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d58/group__TOKEN.html#gafb992e0d4f2440ce500f2a6bc5a76351">_invalidToken</a> (const struct <a class="el" href="../../d6/d8f/struct__Location.html">_Location</a> location)</td></tr>
 <tr class="memdesc:gafb992e0d4f2440ce500f2a6bc5a76351"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an invalid token that represent tokenizer error.  <a href="../../db/d58/group__TOKEN.html#gafb992e0d4f2440ce500f2a6bc5a76351">More...</a><br /></td></tr>
 <tr class="separator:gafb992e0d4f2440ce500f2a6bc5a76351"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -222,7 +231,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define KEYWORDS_COUNT&#160;&#160;&#160;21</td>
+          <td class="memname">#define KEYWORDS_COUNT&#160;&#160;&#160;22</td>
         </tr>
       </table>
 </div><div class="memdoc">

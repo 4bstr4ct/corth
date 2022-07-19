@@ -441,62 +441,62 @@ static struct _Procedure _parseProcedure(
 
 	switch (token.type)
 	{
-		case TOKEN_VOID_KEYWORD:
+		case TOKEN_VOID_TYPE:
 		{
 			SET_DYNAMIC_STRING(procedure.type, "void", 4);
 		} break;
 
-		case TOKEN_CHAR_KEYWORD:
+		case TOKEN_CHAR_TYPE:
 		{
 			SET_DYNAMIC_STRING(procedure.type, "char", 4);
 		} break;
 
-		case TOKEN_INT8_KEYWORD:
+		case TOKEN_INT8_TYPE:
 		{
 			SET_DYNAMIC_STRING(procedure.type, "int8", 4);
 		} break;
 
-		case TOKEN_UINT8_KEYWORD:
+		case TOKEN_UINT8_TYPE:
 		{
 			SET_DYNAMIC_STRING(procedure.type, "uint8", 5);
 		} break;
 
-		case TOKEN_INT16_KEYWORD:
+		case TOKEN_INT16_TYPE:
 		{
 			SET_DYNAMIC_STRING(procedure.type, "int16", 5);
 		} break;
 
-		case TOKEN_UINT16_KEYWORD:
+		case TOKEN_UINT16_TYPE:
 		{
 			SET_DYNAMIC_STRING(procedure.type, "uint16", 6);
 		} break;
 
-		case TOKEN_INT32_KEYWORD:
+		case TOKEN_INT32_TYPE:
 		{
 			SET_DYNAMIC_STRING(procedure.type, "int32", 5);
 		} break;
 
-		case TOKEN_UINT32_KEYWORD:
+		case TOKEN_UINT32_TYPE:
 		{
 			SET_DYNAMIC_STRING(procedure.type, "uint32", 6);
 		} break;
 
-		case TOKEN_INT64_KEYWORD:
+		case TOKEN_INT64_TYPE:
 		{
 			SET_DYNAMIC_STRING(procedure.type, "int64", 5);
 		} break;
 
-		case TOKEN_UINT64_KEYWORD:
+		case TOKEN_UINT64_TYPE:
 		{
 			SET_DYNAMIC_STRING(procedure.type, "uint64", 6);
 		} break;
 
-		case TOKEN_FLOAT32_KEYWORD:
+		case TOKEN_FLOAT32_TYPE:
 		{
 			SET_DYNAMIC_STRING(procedure.type, "float32", 7);
 		} break;
 
-		case TOKEN_FLOAT64_KEYWORD:
+		case TOKEN_FLOAT64_TYPE:
 		{
 			SET_DYNAMIC_STRING(procedure.type, "float64", 7);
 		} break;
@@ -552,9 +552,9 @@ static struct _Procedure _parseProcedure(
 	{
 		struct _Token typeToken = {0};
 		_nextToken(tokenizer, &typeToken);
-		if (typeToken.type < TOKEN_VOID_KEYWORD || typeToken.type > TOKEN_FLOAT64_KEYWORD)
+		if (typeToken.type < TOKEN_VOID_TYPE || typeToken.type > TOKEN_FLOAT64_TYPE)
 		{
-			fprintf(stderr, "ERROR: expected TOKEN_<TYPE>_KEYWORD token, but parsed %s\n", _stringifyToken(&typeToken));
+			fprintf(stderr, "ERROR: expected TOKEN_<TYPE>_TYPE token, but parsed %s\n", _stringifyToken(&typeToken));
 			_destroyToken(&typeToken);
 			exit(1);
 		}
@@ -562,7 +562,7 @@ static struct _Procedure _parseProcedure(
 		struct _Token nameToken = {0};
 		if (!_expectToken(tokenizer, &nameToken, TOKEN_IDENTIFIER))
 		{
-			fprintf(stderr, "ERROR: expected TOKEN_<TYPE>_KEYWORD token, but parsed %s\n", _stringifyToken(&nameToken));
+			fprintf(stderr, "ERROR: expected TOKEN_IDENTIFIER token, but parsed %s\n", _stringifyToken(&nameToken));
 			_destroyToken(&nameToken);
 			exit(1);
 		}
@@ -762,13 +762,13 @@ void _parseExample_HelloWorld(
 
 void _parse(const char* filePath)
 {
-#if 1
+#if 0
 	struct _Tokenizer tokenizer = _createTokenizer(filePath);
 	_parseExample_HelloWorld(&tokenizer);
 	_destroyTokenizer(&tokenizer);
 #endif
 
-#if 0
+#if 1
 	struct _Tokenizer tokenizer = _createTokenizer(filePath);
 	struct _Token token = {0};
 

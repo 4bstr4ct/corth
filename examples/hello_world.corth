@@ -1,3 +1,6 @@
 proc(void) main(int32 argc):
+	scope:
+
+	end
 	// Do somehting here
 end
